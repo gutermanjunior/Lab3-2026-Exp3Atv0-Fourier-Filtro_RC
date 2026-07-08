@@ -225,7 +225,7 @@ Uma versão posterior do programa poderá incluir essa fase para melhorar a comp
 ## 🛠️ Fluxo Conceitual
 
 ```mermaid
-flowchart LR
+flowchart TD
 
 A[Onda quadrada no tempo] --> B[Série de Fourier]
 B --> C[Harmônicos ímpares: f0, 3f0, 5f0...]

@@ -1,5 +1,7 @@
 # 📡 Onda Quadrada, Fourier e Filtro RC Passa-Baixa
+
 ### **Instituto de Física da Universidade de São Paulo (IFUSP)**
+
 #### *Experimento 3 - Atividade 0 | Disciplina: 4302213 - Física Experimental III*
 
 <div align="center">
@@ -15,8 +17,8 @@
 ---
 
 > 📘 **Sobre este repositório:**  
-> Este projeto reúne material didático em Python para visualizar a decomposição de uma onda quadrada em harmônicos de Fourier e estudar qualitativamente como um filtro RC passa-baixa modifica essa onda no domínio do tempo.  
->  
+> Este projeto reúne material didático em Python para visualizar a decomposição de uma onda quadrada em harmônicos de Fourier e estudar qualitativamente como um filtro RC passa-baixa modifica essa onda no domínio do tempo.
+>
 > ⚠️ **Status atual:** este repositório está em desenvolvimento inicial. O programa ainda não está em sua forma final e pode conter partes incompletas, ajustes pendentes ou mudanças futuras de interface e organização.
 
 ---
@@ -33,7 +35,7 @@ onda quadrada
     → ganho passa-baixa G(f)
     → atenuação de cada harmônico
     → reconstrução da onda filtrada
-````
+```
 
 ---
 
@@ -54,19 +56,23 @@ O programa principal deverá permitir:
 
 ## 📋 Sumário
 
-1. [Sobre o Projeto](#-sobre-o-projeto)
-2. [Contexto Didático](#-contexto-didático)
-3. [Fundamentação Teórica](#️-fundamentação-teórica)
-4. [Fluxo Conceitual](#️-fluxo-conceitual)
-5. [Funcionalidades Previstas](#-funcionalidades-previstas)
-6. [Estado Atual do Projeto](#-estado-atual-do-projeto)
-7. [Estrutura do Repositório](#-estrutura-do-repositório)
-8. [Como Usar](#-como-usar)
-9. [Próximos Passos](#-próximos-passos)
-10. [Como Citar](#-como-citar)
-11. [Créditos e Instituição](#-créditos-e-instituição)
+1. [Sobre o Projeto](#sobre-o-projeto)
+2. [Contexto Didático](#contexto-didatico)
+3. [Fundamentação Teórica](#fundamentacao-teorica)
+4. [Fluxo Conceitual](#fluxo-conceitual)
+5. [Funcionalidades Previstas](#funcionalidades-previstas)
+6. [Estado Atual do Projeto](#estado-atual-do-projeto)
+7. [Estrutura do Repositório](#estrutura-do-repositorio)
+8. [Como Usar](#como-usar)
+9. [Uso Didático Esperado](#uso-didatico-esperado)
+10. [Resultado Esperado](#resultado-esperado)
+11. [Próximos Passos](#proximos-passos)
+12. [Como Citar](#como-citar)
+13. [Créditos e Instituição](#creditos-e-instituicao)
 
 ---
+
+<a id="sobre-o-projeto"></a>
 
 ## 📖 Sobre o Projeto
 
@@ -85,6 +91,8 @@ A proposta é permitir que estudantes visualizem, de forma interativa, como uma 
 O foco não é apenas gerar gráficos, mas ajudar o estudante a entender a ponte entre o domínio do tempo e o domínio da frequência.
 
 ---
+
+<a id="contexto-didatico"></a>
 
 ## 📌 Contexto Didático
 
@@ -106,6 +114,8 @@ A atividade permite conectar diretamente três observações:
 
 ---
 
+<a id="fundamentacao-teorica"></a>
+
 ## ⚛️ Fundamentação Teórica
 
 ### Série de Fourier da onda quadrada
@@ -114,8 +124,7 @@ Uma onda quadrada ímpar, de amplitude normalizada entre aproximadamente `-1` e 
 
 $$
 v_{\text{in}}(t)
-================
-
+=
 \frac{4}{\pi}
 \sum_{k=1}^{N}
 \frac{
@@ -156,8 +165,7 @@ O efeito do filtro sobre cada harmônico é modelado como:
 
 $$
 A_{k,\text{filtrado}}
-=====================
-
+=
 A_k G(f_k).
 $$
 
@@ -165,8 +173,7 @@ Assim, a onda filtrada pode ser reconstruída por:
 
 $$
 v_{\text{out}}(t)
-=================
-
+=
 \frac{4}{\pi}
 \sum_{k=1}^{N}
 G(f_k)
@@ -189,8 +196,7 @@ Para um filtro RC passa-baixa ideal medido sobre o capacitor:
 
 $$
 H(f)
-====
-
+=
 \frac{1}{1+jf/f_c},
 $$
 
@@ -198,8 +204,7 @@ com módulo:
 
 $$
 |H(f)|
-======
-
+=
 \frac{1}{\sqrt{1+(f/f_c)^2}},
 $$
 
@@ -207,14 +212,15 @@ e fase:
 
 $$
 \phi(f)
-=======
-
+=
 -\arctan(f/f_c).
 $$
 
 Uma versão posterior do programa poderá incluir essa fase para melhorar a comparação com sinais medidos em bancada.
 
 ---
+
+<a id="fluxo-conceitual"></a>
 
 ## 🛠️ Fluxo Conceitual
 
@@ -238,6 +244,8 @@ style G fill:#f3e5f5,stroke:#6a1b9a,stroke-width:1px
 ```
 
 ---
+
+<a id="funcionalidades-previstas"></a>
 
 ## 💻 Funcionalidades Previstas
 
@@ -266,6 +274,8 @@ Funcionalidades futuras podem incluir:
 
 ---
 
+<a id="estado-atual-do-projeto"></a>
+
 ## 🚧 Estado Atual do Projeto
 
 Este repositório está em fase inicial.
@@ -285,25 +295,29 @@ Neste primeiro commit, o objetivo é registrar publicamente a proposta, iniciar 
 
 ---
 
+<a id="estrutura-do-repositorio"></a>
+
 ## 📁 Estrutura do Repositório
 
 Estrutura inicial sugerida:
 
 ```bash
-├── README.md                                  # Documentação principal do projeto
-├── LICENSE                                    # Licença do código-fonte
-├── .gitignore                                 # Arquivos ignorados pelo Git
-├── fourier_onda_quadrada_filtro_rc.py          # Programa principal em desenvolvimento
-├── figures/                                   # Figuras exportadas ou usadas na documentação
-├── data/                                      # Dados de exemplo ou dados experimentais futuros
-│   ├── examples/                              # Arquivos pequenos de exemplo
-│   └── raw/                                   # Dados brutos locais, preferencialmente não versionados
-└── docs/                                      # Materiais didáticos complementares
+├── README.md                                   # Documentação principal do projeto
+├── LICENSE                                     # Licença do código-fonte
+├── .gitignore                                  # Arquivos ignorados pelo Git
+├── fourier_onda_quadrada_filtro_rc.py           # Programa principal em desenvolvimento
+├── figures/                                    # Figuras exportadas ou usadas na documentação
+├── data/                                       # Dados de exemplo ou dados experimentais futuros
+│   ├── examples/                               # Arquivos pequenos de exemplo
+│   └── raw/                                    # Dados brutos locais, preferencialmente não versionados
+└── docs/                                       # Materiais didáticos complementares
 ```
 
 A estrutura poderá ser modificada conforme o projeto amadurecer.
 
 ---
+
+<a id="como-usar"></a>
 
 ## 🚀 Como Usar
 
@@ -355,6 +369,8 @@ python fourier_onda_quadrada_filtro_rc.py
 
 ---
 
+<a id="uso-didatico-esperado"></a>
+
 ## 🧪 Uso Didático Esperado
 
 Durante a atividade, o estudante deverá observar que:
@@ -367,6 +383,8 @@ Durante a atividade, o estudante deverá observar que:
 6. a forma da onda filtrada depende da relação entre a frequência fundamental da onda quadrada, seus harmônicos e a frequência de corte do filtro.
 
 ---
+
+<a id="resultado-esperado"></a>
 
 ## 📊 Resultado Esperado
 
@@ -391,6 +409,8 @@ harmônicos altos fortemente atenuados
 
 ---
 
+<a id="proximos-passos"></a>
+
 ## 🧭 Próximos Passos
 
 Tarefas planejadas para versões futuras:
@@ -410,16 +430,20 @@ Tarefas planejadas para versões futuras:
 
 ---
 
+<a id="como-citar"></a>
+
 ## 📜 Como Citar
 
 Se este código for útil para seu relatório, aula, monitoria ou material didático, cite este repositório:
 
-> **Araujo Junior, G. R.** (2026). *Onda Quadrada, Fourier e Filtro RC Passa-Baixa: Exp3Atv0*. GitHub Repository.
+> **Araujo Junior, G. R.** (2026). *Onda Quadrada, Fourier e Filtro RC Passa-Baixa: Exp3Atv0*. GitHub Repository.  
 > `https://github.com/gutermanjunior/Lab3-2026-Exp3Atv0-Fourier-Filtro_RC`
 
 Quando o arquivo `CITATION.cff` estiver disponível, dê preferência à citação indicada nele.
 
 ---
+
+<a id="creditos-e-instituicao"></a>
 
 ## 👨‍🔬 Créditos e Instituição
 

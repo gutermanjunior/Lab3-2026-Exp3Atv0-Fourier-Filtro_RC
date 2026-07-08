@@ -1,134 +1,148 @@
 # 📡 Onda Quadrada, Fourier e Filtro RC Passa-Baixa
 
-### **Instituto de Física da Universidade de São Paulo (IFUSP)**
+### Instituto de Física da Universidade de São Paulo (IFUSP)
 
-#### *Experimento 3 - Atividade 0 | Disciplina: 4302213 - Física Experimental III*
+#### Experimento 3 — Atividade 0 | Disciplina 4302213 — Física Experimental III
 
 <div align="center">
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Matplotlib](https://img.shields.io/badge/plotting-Matplotlib-orange.svg?style=for-the-badge)](https://matplotlib.org/)
 [![NumPy](https://img.shields.io/badge/numerical-NumPy-4D77CF.svg?style=for-the-badge&logo=numpy&logoColor=white)](https://numpy.org/)
+[![Matplotlib](https://img.shields.io/badge/plotting-Matplotlib-orange.svg?style=for-the-badge)](https://matplotlib.org/)
 [![IFUSP](https://img.shields.io/badge/institution-IFUSP-red.svg?style=for-the-badge)](https://portal.if.usp.br/ifusp/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Status](https://img.shields.io/badge/status-protótipo%20didático-yellow.svg?style=for-the-badge)](#estado-atual)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 </div>
 
 ---
 
-> 📘 **Sobre este repositório:**  
-> Este projeto reúne material didático em Python para visualizar a decomposição de uma onda quadrada em harmônicos de Fourier e estudar qualitativamente como um filtro RC passa-baixa modifica essa onda no domínio do tempo.
->
-> ⚠️ **Status atual:** este repositório está em desenvolvimento inicial. O programa ainda não está em sua forma final e pode conter partes incompletas, ajustes pendentes ou mudanças futuras de interface e organização.
+## TL;DR
 
----
-
-## 🧾 TL;DR
-
-Programa didático e interativo em Python para mostrar que uma onda quadrada pode ser aproximada pela soma de harmônicos ímpares de Fourier e que um filtro RC passa-baixa atenua principalmente os harmônicos de maior frequência.
+Este repositório contém um programa didático em Python para estudar, de forma interativa, como uma onda quadrada pode ser reconstruída por uma série de Fourier e como um filtro RC passa-baixa altera essa onda ao atenuar seus harmônicos.
 
 A ideia central é:
 
 ```text
-onda quadrada
-    → harmônicos ímpares de Fourier
-    → ganho passa-baixa G(f)
+onda quadrada no tempo
+    → decomposição em harmônicos ímpares
+    → ganho passa-baixa em função da frequência
     → atenuação de cada harmônico
-    → reconstrução da onda filtrada
+    → reconstrução temporal da onda após o filtro
 ```
 
----
+A interface atual permite comparar:
 
-## ⚠️ Comece por aqui
-
-Este repositório foi criado para apoiar uma atividade didática de **Física Experimental III - Lab3**, conectando simulação computacional, análise de Fourier e observações feitas em bancada com circuito RC.
-
-O programa principal deverá permitir:
-
-1. escolher o número `N` de harmônicos ímpares da onda quadrada;
-2. definir a frequência fundamental da onda quadrada;
-3. definir um ganho passa-baixa aproximado por duas retas;
-4. calcular a frequência de cada harmônico;
-5. multiplicar cada harmônico pelo ganho do filtro na frequência correspondente;
-6. comparar a onda quadrada original com a onda filtrada.
+- a onda quadrada ideal;
+- a soma parcial de Fourier da entrada;
+- a resposta ideal RC no capacitor;
+- a reconstrução harmônica usando o ganho definido por retas inseridas pelo aluno;
+- o ganho teórico RC e o ganho ajustado em escala log-log;
+- o espectro harmônico no mesmo painel do gráfico de ganho.
 
 ---
 
-## 📋 Sumário
+## Sumário
 
-1. [Sobre o Projeto](#sobre-o-projeto)
-2. [Contexto Didático](#contexto-didatico)
-3. [Fundamentação Teórica](#fundamentacao-teorica)
-4. [Fluxo Conceitual](#fluxo-conceitual)
-5. [Funcionalidades Previstas](#funcionalidades-previstas)
-6. [Estado Atual do Projeto](#estado-atual-do-projeto)
-7. [Estrutura do Repositório](#estrutura-do-repositorio)
-8. [Como Usar](#como-usar)
-9. [Uso Didático Esperado](#uso-didatico-esperado)
-10. [Resultado Esperado](#resultado-esperado)
-11. [Próximos Passos](#proximos-passos)
-12. [Como Citar](#como-citar)
-13. [Créditos e Instituição](#creditos-e-instituicao)
-
----
-
-<a id="sobre-o-projeto"></a>
-
-## 📖 Sobre o Projeto
-
-Este projeto tem como objetivo construir uma ferramenta didática em Python para explorar a relação entre:
-
-* séries de Fourier;
-* ondas quadradas;
-* harmônicos ímpares;
-* resposta em frequência;
-* filtros passa-baixa;
-* circuitos RC;
-* comparação qualitativa entre simulação e bancada.
-
-A proposta é permitir que estudantes visualizem, de forma interativa, como uma onda quadrada é composta por harmônicos de diferentes frequências e como um circuito RC passa-baixa atenua esses harmônicos de maneira seletiva.
-
-O foco não é apenas gerar gráficos, mas ajudar o estudante a entender a ponte entre o domínio do tempo e o domínio da frequência.
+1. [Sobre o projeto](#sobre-o-projeto)
+2. [Contexto didático](#contexto-didático)
+3. [O que o programa mostra](#o-que-o-programa-mostra)
+4. [Fundamentação teórica](#fundamentação-teórica)
+5. [Interface atual](#interface-atual)
+6. [Como usar](#como-usar)
+7. [Estrutura sugerida do repositório](#estrutura-sugerida-do-repositório)
+8. [Status atual](#status-atual)
+9. [Uso didático esperado](#uso-didático-esperado)
+10. [Limitações do modelo](#limitações-do-modelo)
+11. [Próximos passos](#próximos-passos)
+12. [Como citar](#como-citar)
+13. [Créditos](#créditos)
 
 ---
 
-<a id="contexto-didatico"></a>
+## Sobre o projeto
 
-## 📌 Contexto Didático
+Este projeto foi desenvolvido como material de apoio para a atividade **Exp3Atv0** da disciplina **4302213 — Física Experimental III**, no Instituto de Física da Universidade de São Paulo.
 
-Em uma onda quadrada ideal, a forma abrupta das transições está associada à presença de harmônicos de alta frequência. Quando essa onda passa por um filtro passa-baixa, os harmônicos mais altos são atenuados mais intensamente.
+O objetivo é oferecer uma ferramenta visual para conectar três descrições de um mesmo fenômeno:
 
-Como consequência, a onda filtrada tende a apresentar:
+1. a forma de onda observada no domínio do tempo;
+2. a decomposição harmônica por série de Fourier;
+3. a resposta em frequência de um circuito RC passa-baixa.
 
-* transições menos abruptas;
-* redução das oscilações rápidas;
-* aparência mais suave;
-* menor semelhança com a onda quadrada ideal quando o corte do filtro é baixo;
-* maior semelhança com a onda quadrada ideal quando mais harmônicos passam com ganho próximo de 1.
-
-A atividade permite conectar diretamente três observações:
-
-1. a composição harmônica da onda quadrada;
-2. o gráfico de ganho em função da frequência medido ou estimado para o filtro RC;
-3. a forma de onda observada no osciloscópio.
+O programa não busca substituir a análise experimental. Ele serve como uma ponte conceitual entre as medições de bancada e a interpretação física dos sinais.
 
 ---
 
-<a id="fundamentacao-teorica"></a>
+## Contexto didático
 
-## ⚛️ Fundamentação Teórica
+Uma onda quadrada ideal possui transições abruptas. Essas transições exigem harmônicos de frequência cada vez mais alta na sua decomposição de Fourier.
+
+Quando uma onda quadrada é aplicada a um filtro RC passa-baixa medido no capacitor, os harmônicos mais altos são mais atenuados. Por isso, a saída observada no capacitor tende a ficar mais suave, com bordas menos abruptas e dependência clara da razão entre a frequência fundamental da onda quadrada e a frequência de corte do circuito.
+
+A atividade permite discutir:
+
+- por que uma onda quadrada exige muitos harmônicos;
+- por que harmônicos altos afetam principalmente as bordas da onda;
+- por que um filtro passa-baixa arredonda a saída;
+- como um gráfico de ganho em função da frequência se traduz em uma forma de onda no tempo;
+- como comparar uma curva esperada ideal com uma curva reconstruída a partir de parâmetros medidos.
+
+---
+
+## O que o programa mostra
+
+A interface atual trabalha com três áreas principais:
+
+```text
+linha superior:
+    configurações | ganho passa-baixa + espectro harmônico
+
+linha inferior:
+    gráfico temporal largo
+```
+
+No gráfico temporal, aparecem:
+
+- **Entrada: onda quadrada**  
+  Onda quadrada ideal aplicada ao circuito.
+
+- **Entrada por Fourier**  
+  Soma parcial da série de Fourier da onda quadrada. Serve para mostrar como a onda quadrada é reconstruída por harmônicos ímpares.
+
+- **Saída ideal RC: carga/descarga**  
+  Resposta temporal esperada para o capacitor em um circuito RC ideal, calculada por trechos de carga e descarga exponencial. Essa curva aparece como referência de fundo.
+
+- **Saída por Fourier + ganho ajustado**  
+  Reconstrução harmônica usando o ganho definido pelo aluno por meio de duas retas em escala log-log.
+
+- **Harmônicos individuais**  
+  Visualização opcional dos primeiros harmônicos individuais usados na composição da onda.
+
+No gráfico de ganho, aparecem:
+
+- ganho RC ideal como referência;
+- ganho definido pelas retas do aluno;
+- pontos correspondentes aos harmônicos usados na reconstrução;
+- frequência de corte ideal;
+- interseção das retas;
+- espectro harmônico no eixo direito.
+
+---
+
+## Fundamentação teórica
 
 ### Série de Fourier da onda quadrada
 
-Uma onda quadrada ímpar, de amplitude normalizada entre aproximadamente `-1` e `+1`, pode ser escrita como:
+Uma onda quadrada ímpar de amplitude normalizada pode ser aproximada por:
 
 ```math
-v_{\text{in}}(t)
+v_{\mathrm{in},M}(t)
 =
-\frac{4}{\pi}
-\sum_{k=1}^{N}
+\frac{4V_0}{\pi}
+\sum_{k=1}^{M}
 \frac{
-\sin\left[2\pi(2k-1)f_0t\right]
+\sin\!\left[2\pi(2k-1)f_0t\right]
 }{
 2k-1
 }.
@@ -136,206 +150,179 @@ v_{\text{in}}(t)
 
 Aqui:
 
-* `N` é o número de harmônicos ímpares incluídos;
-* `f0` é a frequência fundamental da onda quadrada;
-* o termo `2k - 1` seleciona apenas os harmônicos ímpares;
-* os harmônicos presentes são `f0`, `3f0`, `5f0`, `7f0`, etc.
+- `V0` é a amplitude de pico;
+- `f0` é a frequência fundamental;
+- `M` é o número de harmônicos ímpares incluídos;
+- o índice `2k-1` seleciona os harmônicos ímpares.
 
-Portanto, a frequência do harmônico de índice `k` é:
+As frequências harmônicas são:
 
 ```math
-f_k = (2k-1)f_0.
+f_k = (2k-1) f_0.
 ```
 
 ---
 
-### Ganho passa-baixa
+### Ganho passa-baixa RC ideal
 
-Um filtro passa-baixa preserva melhor as componentes de baixa frequência e atenua as componentes de alta frequência.
-
-Neste projeto, o ganho do filtro é representado por uma função:
+Para um circuito RC passa-baixa medido no capacitor:
 
 ```math
-G(f)
+H_{RC}(f)
+=
+\frac{1}{1+j2\pi fRC}.
 ```
 
-com valores tipicamente entre `0` e `1`.
-
-O efeito do filtro sobre cada harmônico é modelado como:
+O módulo do ganho é:
 
 ```math
-A_{k,\text{filtrado}}
+G_{RC}(f)
 =
-A_k G(f_k).
+|H_{RC}(f)|
+=
+\frac{1}{\sqrt{1+(2\pi fRC)^2}}.
 ```
 
-Assim, a onda filtrada pode ser reconstruída por:
+A frequência de corte é:
 
 ```math
-v_{\text{out}}(t)
+f_c
 =
-\frac{4}{\pi}
-\sum_{k=1}^{N}
-G(f_k)
+\frac{1}{2\pi RC}.
+```
+
+A fase ideal do circuito é:
+
+```math
+\phi_{RC}(f)
+=
+-\arctan(2\pi fRC).
+```
+
+---
+
+### Ganho definido pelo aluno
+
+O programa permite que o aluno modele o ganho medido em bancada por duas retas em escala log-log:
+
+```math
+\log_{10}(G)
+=
+a\log_{10}(f)+b.
+```
+
+A interface usa duas retas:
+
+```math
+\log_{10}(G_1)
+=
+a_1\log_{10}(f)+b_1,
+```
+
+```math
+\log_{10}(G_2)
+=
+a_2\log_{10}(f)+b_2.
+```
+
+O envelope usado pelo programa é o menor valor entre as duas retas, com o ganho limitado ao intervalo físico-operacional usado na simulação:
+
+```math
+G_{\mathrm{aluno}}(f)
+=
+\min(G_1(f),G_2(f)).
+```
+
+Na prática, isso permite representar uma região de platô em baixas frequências e uma região de queda em altas frequências.
+
+---
+
+### Reconstrução temporal com ganho ajustado
+
+A curva vermelha é reconstruída aplicando o ganho definido pelo aluno a cada harmônico:
+
+```math
+v_{\mathrm{fit},M}(t)
+=
+\frac{4V_0}{\pi}
+\sum_{k=1}^{M}
+G_{\mathrm{aluno}}(f_k)
 \frac{
-\sin\left[2\pi(2k-1)f_0t\right]
+\sin\!\left[2\pi f_kt\right]
 }{
 2k-1
 }.
 ```
 
----
+A interface também possui uma opção para ligar ou desligar a fase ideal RC nessa reconstrução.
 
-### Observação sobre fase
-
-Na forma inicial do programa, a filtragem pode ser tratada apenas como atenuação de amplitude.
-
-Isso é suficiente para uma primeira visualização qualitativa, mas não descreve completamente a resposta real de um circuito RC, pois o filtro também introduz defasagem dependente da frequência.
-
-Para um filtro RC passa-baixa ideal medido sobre o capacitor:
+Com **fase RC desligada**, se:
 
 ```math
-H(f)
-=
-\frac{1}{1+jf/f_c},
+a_1=b_1=a_2=b_2=0,
 ```
 
-com módulo:
+então:
 
 ```math
-|H(f)|
-=
-\frac{1}{\sqrt{1+(f/f_c)^2}},
+G_{\mathrm{aluno}}(f)=1
 ```
 
-e fase:
+e a curva vermelha coincide com a soma de Fourier da entrada.
 
-```math
-\phi(f)
-=
--\arctan(f/f_c).
-```
-
-Uma versão posterior do programa poderá incluir essa fase para melhorar a comparação com sinais medidos em bancada.
+Com **fase RC ligada**, as amplitudes continuam vindo do ganho definido pelo aluno, mas cada harmônico recebe a fase ideal do circuito RC.
 
 ---
 
-<a id="fluxo-conceitual"></a>
+## Interface atual
 
-## 🛠️ Fluxo Conceitual
+A versão atual da interface inclui:
 
-```mermaid
-flowchart TD
+- janela inicial de escolha da escala visual;
+- layout em duas linhas:
+  - configurações e ganho na parte superior;
+  - gráfico temporal largo na parte inferior;
+- slider de `M` com modo de confirmação ao soltar o mouse;
+- caixa de texto para digitar `M` diretamente;
+- botões para escolher circuito, frequência e camadas exibidas;
+- retas ajustáveis por parâmetros `a1`, `b1`, `a2`, `b2`;
+- botão para usar retas associadas ao RC ideal;
+- botão para ligar/desligar a fase ideal RC na reconstrução vermelha;
+- indicador visual de processamento para ações matemáticas e de interface.
 
-A[Onda quadrada no tempo] --> B[Série de Fourier]
-B --> C[Harmônicos ímpares: f0, 3f0, 5f0...]
-C --> D["Ganho passa-baixa G(f)"]
-D --> E["Multiplicação A_k por G(f_k)"]
-E --> F[Reconstrução da onda filtrada]
-F --> G[Comparação qualitativa com a bancada]
+### Circuitos pré-configurados
 
-style A fill:#e3f2fd,stroke:#1565c0,stroke-width:1px
-style B fill:#ede7f6,stroke:#5e35b1,stroke-width:1px
-style C fill:#fff3e0,stroke:#ef6c00,stroke-width:1px
-style D fill:#d9f2d9,stroke:#2e7d32,stroke-width:1px
-style E fill:#fce4ec,stroke:#c2185b,stroke-width:1px
-style F fill:#e0f7fa,stroke:#00838f,stroke-width:1px
-style G fill:#f3e5f5,stroke:#6a1b9a,stroke-width:1px
-```
+O programa inclui dois casos didáticos:
 
----
+| R | C | Observação |
+|---:|---:|---|
+| `1 kΩ` | `0,47 µF` | caso de referência |
+| `47 Ω` | `47 µF` | caso alternativo com frequências ajustadas pela razão `f0/fc` |
 
-<a id="funcionalidades-previstas"></a>
+### Frequências de interesse
 
-## 💻 Funcionalidades Previstas
+Para o circuito `1 kΩ`, as frequências preparadas são:
 
-O programa deverá incluir:
+| Regime | Frequência |
+|---|---:|
+| baixo | `72 Hz` |
+| aproximadamente corte | `360 Hz` |
+| alto | `7,2 kHz` |
 
-* visualização da onda quadrada ideal;
-* soma parcial de Fourier com `N` harmônicos ímpares;
-* controle interativo do número de harmônicos por `Slider`;
-* cálculo automático das frequências dos harmônicos;
-* aplicação de um ganho passa-baixa a cada harmônico;
-* comparação entre a onda antes e depois do filtro;
-* gráfico do ganho em função da frequência;
-* indicação dos harmônicos usados sobre o gráfico de ganho;
-* visualização das amplitudes harmônicas antes e depois da filtragem;
-* opção para mostrar ou ocultar harmônicos individuais.
-
-Funcionalidades futuras podem incluir:
-
-* entrada de dados experimentais por arquivo `.csv`;
-* interpolação do ganho medido em bancada;
-* comparação entre ganho experimental e ganho teórico RC;
-* inclusão da fase do filtro RC;
-* exportação automática de figuras;
-* versão em notebook para uso no Google Colab;
-* versão em script `.py` para execução local.
+Para o circuito `47 Ω`, as frequências são ajustadas automaticamente para preservar aproximadamente as mesmas razões `f0/fc`.
 
 ---
 
-<a id="estado-atual-do-projeto"></a>
+## Como usar
 
-## 🚧 Estado Atual do Projeto
-
-Este repositório está em fase inicial.
-
-O programa ainda pode passar por mudanças importantes em:
-
-* nome dos arquivos;
-* organização das funções;
-* interface gráfica;
-* entrada de parâmetros;
-* modelo de ganho passa-baixa;
-* inclusão ou não de fase;
-* estrutura das pastas;
-* documentação para alunos.
-
-Neste primeiro commit, o objetivo é registrar publicamente a proposta, iniciar a organização do repositório e estabelecer uma base de desenvolvimento didático.
-
----
-
-<a id="estrutura-do-repositorio"></a>
-
-## 📁 Estrutura do Repositório
-
-Estrutura inicial sugerida:
-
-```bash
-├── README.md                                   # Documentação principal do projeto
-├── LICENSE                                     # Licença do código-fonte
-├── .gitignore                                  # Arquivos ignorados pelo Git
-├── fourier_onda_quadrada_filtro_rc.py           # Programa principal em desenvolvimento
-├── figures/                                    # Figuras exportadas ou usadas na documentação
-├── data/                                       # Dados de exemplo ou dados experimentais futuros
-│   ├── examples/                               # Arquivos pequenos de exemplo
-│   └── raw/                                    # Dados brutos locais, preferencialmente não versionados
-└── docs/                                       # Materiais didáticos complementares
-```
-
-A estrutura poderá ser modificada conforme o projeto amadurecer.
-
----
-
-<a id="como-usar"></a>
-
-## 🚀 Como Usar
-
-### 1. Clone o repositório
+### 1. Clonar o repositório
 
 ```bash
 git clone https://github.com/gutermanjunior/Lab3-2026-Exp3Atv0-Fourier-Filtro_RC.git
-```
-
-Entre na pasta:
-
-```bash
 cd Lab3-2026-Exp3Atv0-Fourier-Filtro_RC
 ```
 
----
-
-### 2. Crie um ambiente virtual
+### 2. Criar ambiente virtual
 
 No Windows PowerShell:
 
@@ -351,90 +338,155 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
----
-
-### 3. Instale as dependências
+### 3. Instalar dependências
 
 ```bash
 pip install numpy matplotlib
 ```
 
----
+Opcionalmente, crie um `requirements.txt` com:
 
-### 4. Execute o programa
+```text
+numpy
+matplotlib
+```
+
+e instale com:
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Executar
 
 ```bash
 python fourier_onda_quadrada_filtro_rc.py
 ```
 
----
-
-<a id="uso-didatico-esperado"></a>
-
-## 🧪 Uso Didático Esperado
-
-Durante a atividade, o estudante deverá observar que:
-
-1. com poucos harmônicos, a onda quadrada é mal aproximada;
-2. ao aumentar `N`, a aproximação melhora, mas aparecem oscilações próximas às descontinuidades;
-3. harmônicos de ordem mais alta são importantes para tornar as bordas da onda mais abruptas;
-4. o filtro passa-baixa reduz principalmente esses harmônicos de alta frequência;
-5. a onda filtrada fica mais suave;
-6. a forma da onda filtrada depende da relação entre a frequência fundamental da onda quadrada, seus harmônicos e a frequência de corte do filtro.
+Ao iniciar, o programa abre uma janela para escolher a escala visual. Depois disso, a janela principal é aberta com a escala travada para a sessão.
 
 ---
 
-<a id="resultado-esperado"></a>
+## Estrutura sugerida do repositório
 
-## 📊 Resultado Esperado
-
-A interface final deverá mostrar, em uma única janela:
-
-1. a onda quadrada ideal;
-2. a soma de Fourier antes do filtro;
-3. a soma de Fourier após o filtro;
-4. o ganho passa-baixa em função da frequência;
-5. os pontos correspondentes aos harmônicos usados;
-6. as amplitudes dos harmônicos antes e depois da filtragem.
-
-A comparação qualitativa esperada é:
-
-```text
-mais harmônicos preservados pelo filtro
-    → onda filtrada mais parecida com a onda quadrada
-
-harmônicos altos fortemente atenuados
-    → onda filtrada mais arredondada e suave
+```bash
+.
+├── README.md
+├── LICENSE
+├── .gitignore
+├── fourier_onda_quadrada_filtro_rc.py
+├── requirements.txt
+├── figures/
+│   └── README.md
+├── data/
+│   ├── examples/
+│   └── raw/
+└── docs/
 ```
 
+Arquivos e pastas sugeridos:
+
+- `fourier_onda_quadrada_filtro_rc.py`  
+  Script principal da simulação.
+
+- `requirements.txt`  
+  Dependências mínimas do projeto.
+
+- `figures/`  
+  Figuras exportadas ou imagens usadas na documentação.
+
+- `data/examples/`  
+  Dados pequenos de exemplo, caso sejam adicionados em versões futuras.
+
+- `data/raw/`  
+  Dados brutos locais. Recomenda-se não versionar arquivos grandes ou dados experimentais ainda não tratados.
+
+- `docs/`  
+  Materiais didáticos complementares, roteiro de aula ou explicações adicionais.
+
 ---
 
-<a id="proximos-passos"></a>
+## Status atual
 
-## 🧭 Próximos Passos
+O projeto está em fase de protótipo didático funcional.
 
-Tarefas planejadas para versões futuras:
+A versão atual já possui:
 
-* [ ] estabilizar o script principal;
-* [ ] revisar a interface gráfica;
-* [ ] separar funções matemáticas de funções de visualização;
-* [ ] adicionar entrada de dados experimentais por CSV;
-* [ ] permitir interpolação do ganho medido pelos alunos;
-* [ ] adicionar opção para incluir fase do filtro RC;
-* [ ] exportar figuras automaticamente;
-* [ ] criar exemplos de uso com diferentes frequências fundamentais;
-* [ ] criar um roteiro curto para os alunos;
-* [ ] adicionar imagens demonstrativas ao README;
-* [ ] criar `requirements.txt`;
-* [ ] criar `CITATION.cff`.
+- decomposição de onda quadrada por série de Fourier;
+- resposta ideal RC por carga/descarga exponencial;
+- ganho RC ideal em escala log-log;
+- ganho ajustável por duas retas inseridas pelo aluno;
+- reconstrução temporal com ganho ajustado;
+- opção de fase RC ideal ligada/desligada;
+- espectro harmônico integrado ao gráfico de ganho;
+- interface com controle de escala visual inicial;
+- otimizações de responsividade para o slider;
+- indicador de processamento;
+- layout refinado para uso em tela widescreen.
+
+Ainda há pontos em evolução:
+
+- refinamento fino de alinhamento da interface;
+- teste em diferentes versões de Python, Matplotlib e backends gráficos;
+- possível separação futura entre núcleo físico e camada de interface;
+- entrada de dados experimentais por CSV;
+- documentação pedagógica para alunos.
 
 ---
 
-<a id="como-citar"></a>
+## Uso didático esperado
 
-## 📜 Como Citar
+Durante a atividade, espera-se que o estudante explore perguntas como:
 
-Se este código for útil para seu relatório, aula, monitoria ou material didático, cite este repositório:
+1. Quantos harmônicos são necessários para a onda se parecer com uma onda quadrada?
+2. O que acontece com a forma da onda quando harmônicos altos são atenuados?
+3. Como a posição dos harmônicos no gráfico de ganho explica a forma da onda no tempo?
+4. Como as retas medidas em escala log-log afetam a reconstrução temporal?
+5. Por que a fase do filtro altera a comparação entre a reconstrução harmônica e a resposta temporal ideal?
+6. Em quais regimes a saída no capacitor se aproxima de uma carga/descarga exponencial simples?
+7. O que muda quando a frequência fundamental está abaixo, próxima ou acima da frequência de corte?
+
+---
+
+## Limitações do modelo
+
+Este programa é didático e possui simplificações.
+
+Entre as principais limitações:
+
+- o circuito RC é tratado como ideal;
+- a onda quadrada é idealizada, sem limitações reais de gerador;
+- a reconstrução por Fourier é truncada;
+- a série apresenta fenômeno de Gibbs próximo às descontinuidades;
+- as retas do aluno representam apenas o módulo do ganho;
+- a opção de fase usa a fase ideal RC, não uma fase medida em bancada;
+- não há, por enquanto, importação direta de dados experimentais;
+- o ajuste por duas retas é uma aproximação didática do ganho passa-baixa.
+
+---
+
+## Próximos passos
+
+Possíveis melhorias futuras:
+
+- [ ] criar `requirements.txt`;
+- [ ] separar funções físicas/matemáticas da classe de interface;
+- [ ] criar testes simples para funções de Fourier e ganho;
+- [ ] permitir importação de dados experimentais por `.csv`;
+- [ ] interpolar ganho medido pelos alunos;
+- [ ] permitir comparação entre ganho medido, ganho ajustado e ganho ideal;
+- [ ] adicionar exportação automática de figuras;
+- [ ] adicionar roteiro didático para alunos;
+- [ ] adicionar imagens da interface ao README;
+- [ ] criar `CITATION.cff`;
+- [ ] revisar layout da interface em escalas 100%, 125%, 150% e 200%;
+- [ ] documentar limitações associadas à fase.
+
+---
+
+## Como citar
+
+Se este código for útil em relatório, aula, monitoria ou material didático, cite:
 
 > **Araujo Junior, G. R.** (2026). *Onda Quadrada, Fourier e Filtro RC Passa-Baixa: Exp3Atv0*. GitHub Repository.  
 > `https://github.com/gutermanjunior/Lab3-2026-Exp3Atv0-Fourier-Filtro_RC`
@@ -443,18 +495,16 @@ Quando o arquivo `CITATION.cff` estiver disponível, dê preferência à citaç�
 
 ---
 
-<a id="creditos-e-instituicao"></a>
+## Créditos
 
-## 👨‍🔬 Créditos e Instituição
-
-* **Desenvolvedor:** Guterman Rodrigues de Araujo Junior
-* **Vínculo:** Mestrado em Física - IFUSP
-* **Disciplina:** 4302213 - Física Experimental III
-* **Atividade:** Experimento 3 - Atividade 0
-* **Local:** Instituto de Física da Universidade de São Paulo (IFUSP)
+- **Desenvolvedor:** Guterman Rodrigues de Araujo Junior
+- **Instituição:** Instituto de Física da Universidade de São Paulo
+- **Disciplina:** 4302213 — Física Experimental III
+- **Atividade:** Experimento 3 — Atividade 0
+- **Finalidade:** material didático em desenvolvimento para apoio à visualização de Fourier, resposta em frequência e filtro RC passa-baixa.
 
 ---
 
 <div align="center">
-  <sub>Material didático em desenvolvimento para apoio à Física Experimental III - IFUSP.</sub>
+  <sub>Material didático em desenvolvimento para apoio à Física Experimental III — IFUSP.</sub>
 </div>

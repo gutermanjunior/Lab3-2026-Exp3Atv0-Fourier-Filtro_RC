@@ -229,8 +229,8 @@ flowchart LR
 
 A[Onda quadrada no tempo] --> B[Série de Fourier]
 B --> C[Harmônicos ímpares: f0, 3f0, 5f0...]
-C --> D["Ganho passa-baixa G(f)"]
-D --> E["Multiplicação A_k por G(f_k)"]
+C --> D["Ganho passa-baixa G de f"]
+D --> E["Multiplicação A_k por G de f_k"]
 E --> F[Reconstrução da onda filtrada]
 F --> G[Comparação qualitativa com a bancada]
 

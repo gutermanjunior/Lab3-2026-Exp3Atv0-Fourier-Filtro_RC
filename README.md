@@ -122,7 +122,7 @@ A atividade permite conectar diretamente três observações:
 
 Uma onda quadrada ímpar, de amplitude normalizada entre aproximadamente `-1` e `+1`, pode ser escrita como:
 
-$$
+```math
 v_{\text{in}}(t)
 =
 \frac{4}{\pi}
@@ -132,7 +132,7 @@ v_{\text{in}}(t)
 }{
 2k-1
 }.
-$$
+```
 
 Aqui:
 
@@ -143,9 +143,9 @@ Aqui:
 
 Portanto, a frequência do harmônico de índice `k` é:
 
-$$
+```math
 f_k = (2k-1)f_0.
-$$
+```
 
 ---
 
@@ -155,23 +155,23 @@ Um filtro passa-baixa preserva melhor as componentes de baixa frequência e aten
 
 Neste projeto, o ganho do filtro é representado por uma função:
 
-$$
+```math
 G(f)
-$$
+```
 
 com valores tipicamente entre `0` e `1`.
 
 O efeito do filtro sobre cada harmônico é modelado como:
 
-$$
+```math
 A_{k,\text{filtrado}}
 =
 A_k G(f_k).
-$$
+```
 
 Assim, a onda filtrada pode ser reconstruída por:
 
-$$
+```math
 v_{\text{out}}(t)
 =
 \frac{4}{\pi}
@@ -182,7 +182,7 @@ G(f_k)
 }{
 2k-1
 }.
-$$
+```
 
 ---
 
@@ -194,27 +194,27 @@ Isso é suficiente para uma primeira visualização qualitativa, mas não descre
 
 Para um filtro RC passa-baixa ideal medido sobre o capacitor:
 
-$$
+```math
 H(f)
 =
 \frac{1}{1+jf/f_c},
-$$
+```
 
 com módulo:
 
-$$
+```math
 |H(f)|
 =
 \frac{1}{\sqrt{1+(f/f_c)^2}},
-$$
+```
 
 e fase:
 
-$$
+```math
 \phi(f)
 =
 -\arctan(f/f_c).
-$$
+```
 
 Uma versão posterior do programa poderá incluir essa fase para melhorar a comparação com sinais medidos em bancada.
 

@@ -6,8 +6,8 @@
 
 <div align="center">
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge\&logo=python\&logoColor=white)
-![NumPy](https://img.shields.io/badge/NumPy-c%C3%A1lculo%20num%C3%A9rico-4D77CF?style=for-the-badge\&logo=numpy\&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-c%C3%A1lculo%20num%C3%A9rico-4D77CF?style=for-the-badge&logo=numpy&logoColor=white)
 ![Matplotlib](https://img.shields.io/badge/Matplotlib-interface%20gr%C3%A1fica-11557C?style=for-the-badge)
 ![Status](https://img.shields.io/badge/status-prot%C3%B3tipo%20did%C3%A1tico-yellow?style=for-the-badge)
 ![Versão](https://img.shields.io/badge/vers%C3%A3o-1.5.0--alpha-red?style=for-the-badge)
@@ -48,22 +48,22 @@ A medição no osciloscópio é a referência experimental. O programa fornece m
 
 ## Sumário
 
-* [Objetivos didáticos](#objetivos-didáticos)
-* [Funcionalidades atuais](#funcionalidades-atuais)
-* [Interface](#interface)
-* [Fundamentação física](#fundamentação-física)
-* [Modelo de ganho obtido das retas do aluno](#modelo-de-ganho-obtido-das-retas-do-aluno)
-* [Significado das curvas e dos pontos](#significado-das-curvas-e-dos-pontos)
-* [Termo harmônico genérico](#termo-harmônico-genérico)
-* [Como usar](#como-usar)
-* [Instalação](#instalação)
-* [Estrutura do projeto](#estrutura-do-projeto)
-* [Estratégias de desempenho](#estratégias-de-desempenho)
-* [Limitações](#limitações)
-* [Validações esperadas](#validações-esperadas)
-* [Próximos passos](#próximos-passos)
-* [Como citar](#como-citar)
-* [Créditos](#créditos)
+- [Objetivos didáticos](#objetivos-didáticos)
+- [Funcionalidades atuais](#funcionalidades-atuais)
+- [Interface](#interface)
+- [Fundamentação física](#fundamentação-física)
+- [Modelo de ganho obtido das retas do aluno](#modelo-de-ganho-obtido-das-retas-do-aluno)
+- [Significado das curvas e dos pontos](#significado-das-curvas-e-dos-pontos)
+- [Termo harmônico genérico](#termo-harmônico-genérico)
+- [Como usar](#como-usar)
+- [Instalação](#instalação)
+- [Estrutura do projeto](#estrutura-do-projeto)
+- [Estratégias de desempenho](#estratégias-de-desempenho)
+- [Limitações](#limitações)
+- [Validações esperadas](#validações-esperadas)
+- [Próximos passos](#próximos-passos)
+- [Como citar](#como-citar)
+- [Créditos](#créditos)
 
 ---
 
@@ -71,15 +71,15 @@ A medição no osciloscópio é a referência experimental. O programa fornece m
 
 O programa permite investigar:
 
-* como uma onda quadrada é construída a partir de senos;
-* por que aparecem somente harmônicos ímpares;
-* como o número de termos $M$ altera a reconstrução;
-* como o ganho passa-baixa atenua os harmônicos mais altos;
-* como a fase altera a soma temporal dos termos;
-* por que a saída no capacitor fica mais suave;
-* como relacionar retas ajustadas em escala log-log com uma curva de ganho contínua;
-* como os pontos $G(f_k)$ do gráfico de ganho se transformam em amplitudes $A_kG(f_k)$ no espectro;
-* como comparar o circuito RC teórico com um modelo inferido das medições de bancada.
+- como uma onda quadrada é construída a partir de senos;
+- por que aparecem somente harmônicos ímpares;
+- como o número de termos $M$ altera a reconstrução;
+- como o ganho passa-baixa atenua os harmônicos mais altos;
+- como a fase altera a soma temporal dos termos;
+- por que a saída no capacitor fica mais suave;
+- como relacionar retas ajustadas em escala log-log com uma curva de ganho contínua;
+- como os pontos $G(f_k)$ do gráfico de ganho se transformam em amplitudes $A_kG(f_k)$ no espectro;
+- como comparar o circuito RC teórico com um modelo inferido das medições de bancada.
 
 ---
 
@@ -87,24 +87,24 @@ O programa permite investigar:
 
 A versão atual inclui:
 
-* onda quadrada ideal de entrada;
-* reconstrução da entrada por série de Fourier;
-* resposta ideal do capacitor por carga e descarga exponencial;
-* modelo teórico do ganho de um circuito RC ideal;
-* duas retas ajustáveis em escala log-log;
-* curva suave de ganho inferida das duas retas;
-* reconstrução temporal usando o ganho inferido pelo aluno;
-* fase estimada opcional a partir da interseção das retas;
-* espectro harmônico em painel separado;
-* identificação dos ganhos avaliados nas frequências harmônicas;
-* painel didático com a forma genérica do termo harmônico;
-* valores numéricos do último termo incluído, $k=M$;
-* escolha de circuito e frequência de interesse;
-* controle de $M$ por slider, botões e caixa de texto;
-* escala visual escolhida antes da abertura da janela principal;
-* indicador visual `Processando...`;
-* atualização otimizada do slider por confirmação ao soltar o mouse;
-* suporte a diferentes escalas de exibição.
+- onda quadrada ideal de entrada;
+- reconstrução da entrada por série de Fourier;
+- resposta ideal do capacitor por carga e descarga exponencial;
+- modelo teórico do ganho de um circuito RC ideal;
+- duas retas ajustáveis em escala log-log;
+- curva suave de ganho inferida das duas retas;
+- reconstrução temporal usando o ganho inferido pelo aluno;
+- fase estimada opcional a partir da interseção das retas;
+- espectro harmônico em painel separado;
+- identificação dos ganhos avaliados nas frequências harmônicas;
+- painel didático com a forma genérica do termo harmônico;
+- valores numéricos do último termo incluído, $k=M$;
+- escolha de circuito e frequência de interesse;
+- controle de $M$ por slider, botões e caixa de texto;
+- escala visual escolhida antes da abertura da janela principal;
+- indicador visual `Processando...`;
+- atualização otimizada do slider por confirmação ao soltar o mouse;
+- suporte a diferentes escalas de exibição.
 
 ---
 
@@ -127,20 +127,18 @@ A interface é organizada em quatro regiões:
 
 A área de configurações permite selecionar:
 
-* circuito:
-
-  * $R=1,\mathrm{k\Omega}$, $C=0{,}47,\mathrm{\mu F}$;
-  * $R=47,\Omega$, $C=47,\mathrm{\mu F}$;
-* frequência fundamental:
-
-  * regime abaixo do corte;
-  * região próxima do corte;
-  * regime acima do corte;
-* número de termos $M$;
-* elementos que devem ser exibidos;
-* parâmetros $a_1,b_1,a_2,b_2$ das retas;
-* fase estimada ligada ou desligada;
-* carregamento das assíntotas teóricas de um RC ideal.
+- circuito:
+  - $R=1\,\mathrm{k\Omega}$, $C=0{,}47\,\mathrm{\mu F}$;
+  - $R=47\,\Omega$, $C=47\,\mathrm{\mu F}$;
+- frequência fundamental:
+  - regime abaixo do corte;
+  - região próxima do corte;
+  - regime acima do corte;
+- número de termos $M$;
+- elementos que devem ser exibidos;
+- parâmetros $a_1,b_1,a_2,b_2$ das retas;
+- fase estimada ligada ou desligada;
+- carregamento das assíntotas teóricas de um RC ideal.
 
 ### Controle de $M$
 
@@ -167,13 +165,13 @@ O slider só confirma o valor ao soltar o mouse. Durante o arraste, apenas seu e
 A entrada é modelada por:
 
 $$
-v_e(t)=V_0,\operatorname{sgn}!\left[\sin(2\pi f_0t)\right].
+v_e(t)=V_0\,\mathrm{sgn}\!\left[\sin(2\pi f_0t)\right].
 $$
 
 Aqui:
 
-* $V_0$ é a amplitude de pico;
-* $f_0$ é a frequência fundamental.
+- $V_0$ é a amplitude de pico;
+- $f_0$ é a frequência fundamental.
 
 ---
 
@@ -183,12 +181,11 @@ A soma truncada com $M$ termos ímpares é:
 
 $$
 v_{e,M}(t)
-==========
-
+=
 \frac{4V_0}{\pi}
 \sum_{k=1}^{M}
 \frac{
-\sin!\left[2\pi(2k-1)f_0t\right]
+\sin\!\left[2\pi(2k-1)f_0t\right]
 }{
 2k-1
 }.
@@ -222,8 +219,7 @@ Para um circuito RC série, medido sobre o capacitor:
 
 $$
 H_{RC}(f)
-=========
-
+=
 \frac{1}{1+j2\pi fRC}.
 $$
 
@@ -231,10 +227,9 @@ O módulo do ganho é:
 
 $$
 G_{RC}(f)
-=========
-
-# \left|H_{RC}(f)\right|
-
+=
+\left|H_{RC}(f)\right|
+=
 \frac{1}{
 \sqrt{1+(2\pi fRC)^2}
 }.
@@ -244,8 +239,7 @@ A fase é:
 
 $$
 \phi_{RC}(f)
-============
-
+=
 -\arctan(2\pi fRC).
 $$
 
@@ -305,8 +299,7 @@ Em vez de usar o mínimo abrupto entre as retas, o programa constrói:
 
 $$
 G_{\mathrm{aluno}}(f)
-=====================
-
+=
 \left[
 G_1(f)^{-p}
 +
@@ -334,8 +327,7 @@ a expressão se reduz a:
 
 $$
 G_{\mathrm{aluno}}(f)
-=====================
-
+=
 \frac{1}{
 \sqrt{1+(f/f_c)^2}
 },
@@ -351,8 +343,7 @@ A frequência de interseção é:
 
 $$
 f_\times
-========
-
+=
 10^{
 \frac{b_2-b_1}{a_1-a_2}
 }.
@@ -362,9 +353,8 @@ Quando a fase estimada está ligada, o programa usa:
 
 $$
 \phi_{\mathrm{aluno}}(f)
-========================
-
--\arctan!\left(\frac{f}{f_\times}\right).
+=
+-\arctan\!\left(\frac{f}{f_\times}\right).
 $$
 
 Essa fase não foi medida diretamente. Ela é uma aproximação de primeira ordem inferida das próprias retas.
@@ -445,8 +435,7 @@ Em outras palavras:
 
 $$
 A_{k,\mathrm{saída}}
-====================
-
+=
 A_kG_{\mathrm{aluno}}(f_k).
 $$
 
@@ -468,8 +457,7 @@ O espectro foi colocado em um eixo próprio porque seus pontos representam **amp
 
 $$
 A_k
-===
-
+=
 \frac{4V_0}{\pi(2k-1)}.
 $$
 
@@ -523,11 +511,10 @@ Reconstrução:
 
 $$
 v_{\mathrm{aluno},M}(t)
-=======================
-
+=
 \sum_{k=1}^{M}
 A_kG_{\mathrm{aluno}}(f_k)
-\sin!\left(
+\sin\!\left(
 2\pi f_kt+\phi_{\mathrm{aluno}}(f_k)
 \right).
 $$
@@ -542,9 +529,8 @@ Com fase estimada ligada:
 
 $$
 \phi_{\mathrm{aluno}}(f_k)
-==========================
-
--\arctan!\left(\frac{f_k}{f_\times}\right).
+=
+-\arctan\!\left(\frac{f_k}{f_\times}\right).
 $$
 
 O objetivo é comparar qualitativamente essa curva com a forma de onda observada no osciloscópio.
@@ -557,10 +543,9 @@ O programa mostra explicitamente:
 
 $$
 v_k(t)
-======
-
+=
 A_kG(f_k)
-\sin!\left(
+\sin\!\left(
 \omega_kt+\phi_k
 \right).
 $$
@@ -598,9 +583,9 @@ AM·G(fM)
 
 A distinção de notação é:
 
-* $M$: número total de termos incluídos;
-* $k$: índice de um termo;
-* $n_k=2k-1$: ordem harmônica ímpar.
+- $M$: número total de termos incluídos;
+- $k$: índice de um termo;
+- $n_k=2k-1$: ordem harmônica ímpar.
 
 ---
 
@@ -611,21 +596,18 @@ A distinção de notação é:
 3. Selecione a frequência fundamental.
 4. Defina o número de termos $M$.
 5. Insira os coeficientes das duas retas:
-
-   * $a_1,b_1$;
-   * $a_2,b_2$.
+   - $a_1,b_1$;
+   - $a_2,b_2$.
 6. Observe:
-
-   * as retas;
-   * a curva suave inferida;
-   * os valores do ganho nas frequências harmônicas;
-   * o espectro;
-   * a reconstrução temporal.
+   - as retas;
+   - a curva suave inferida;
+   - os valores do ganho nas frequências harmônicas;
+   - o espectro;
+   - a reconstrução temporal.
 7. Ligue ou desligue a fase estimada.
 8. Compare a curva vermelha:
-
-   * com a referência teórica laranja;
-   * com a forma de onda medida no osciloscópio.
+   - com a referência teórica laranja;
+   - com a forma de onda medida no osciloscópio.
 
 ### Retas em decibéis
 
@@ -633,8 +615,7 @@ Se o ajuste foi feito como:
 
 $$
 G_{\mathrm{dB}}
-===============
-
+=
 A\log_{10}(f)+B,
 $$
 
@@ -658,10 +639,10 @@ $$
 
 ## Requisitos
 
-* Python 3.10 ou superior;
-* NumPy;
-* Matplotlib;
-* Tkinter disponível na instalação do Python para a janela inicial de escala.
+- Python 3.10 ou superior;
+- NumPy;
+- Matplotlib;
+- Tkinter disponível na instalação do Python para a janela inicial de escala.
 
 ## Clonar o repositório
 
@@ -729,11 +710,11 @@ fourier_onda_quadrada_filtro_rc.py
 
 Contém:
 
-* modelos físicos;
-* funções matemáticas;
-* construção da interface;
-* lógica de interação;
-* otimizações de renderização.
+- modelos físicos;
+- funções matemáticas;
+- construção da interface;
+- lógica de interação;
+- otimizações de renderização.
 
 ---
 
@@ -741,18 +722,18 @@ Contém:
 
 A interface Matplotlib recebeu otimizações específicas:
 
-* escala visual calculada uma única vez;
-* tema visual estático;
-* ausência de reescalonamento durante as interações;
-* botões simples no lugar de widgets mais frágeis;
-* harmônicos individuais agrupados em `LineCollection`;
-* slider com confirmação ao soltar;
-* blitting local durante o arraste;
-* `TextBox.set_val()` evitado em sincronizações internas;
-* apenas um redraw completo ao fim de cada alteração;
-* indicador `Processando...` desenhado por blitting quando possível;
-* legendas criadas uma única vez;
-* atualização seletiva de curvas e textos.
+- escala visual calculada uma única vez;
+- tema visual estático;
+- ausência de reescalonamento durante as interações;
+- botões simples no lugar de widgets mais frágeis;
+- harmônicos individuais agrupados em `LineCollection`;
+- slider com confirmação ao soltar;
+- blitting local durante o arraste;
+- `TextBox.set_val()` evitado em sincronizações internas;
+- apenas um redraw completo ao fim de cada alteração;
+- indicador `Processando...` desenhado por blitting quando possível;
+- legendas criadas uma única vez;
+- atualização seletiva de curvas e textos.
 
 O custo restante depende do backend gráfico, da resolução da tela, da escala do sistema e da versão do Matplotlib.
 
@@ -760,17 +741,17 @@ O custo restante depende do backend gráfico, da resolução da tela, da escala 
 
 ## Limitações
 
-* O circuito de referência é ideal.
-* A onda quadrada de entrada é idealizada.
-* A série de Fourier é truncada.
-* Há fenômeno de Gibbs nas descontinuidades.
-* Os valores nominais de $R$ e $C$ não incluem tolerâncias automaticamente.
-* A curva suave do aluno pressupõe comportamento de primeira ordem.
-* A fase estimada não é uma fase experimental medida.
-* O programa ainda não importa pontos experimentais diretamente.
-* O osciloscópio, gerador, cabos, impedâncias, ruído e largura de banda real podem produzir diferenças em relação ao modelo.
-* A combinação suave com $p=2$ é fisicamente adequada para assíntotas de um RC de primeira ordem, mas não representa automaticamente circuitos de ordem superior.
-* O programa é um recurso didático, não um instrumento de ajuste metrológico.
+- O circuito de referência é ideal.
+- A onda quadrada de entrada é idealizada.
+- A série de Fourier é truncada.
+- Há fenômeno de Gibbs nas descontinuidades.
+- Os valores nominais de $R$ e $C$ não incluem tolerâncias automaticamente.
+- A curva suave do aluno pressupõe comportamento de primeira ordem.
+- A fase estimada não é uma fase experimental medida.
+- O programa ainda não importa pontos experimentais diretamente.
+- O osciloscópio, gerador, cabos, impedâncias, ruído e largura de banda real podem produzir diferenças em relação ao modelo.
+- A combinação suave com $p=2$ é fisicamente adequada para assíntotas de um RC de primeira ordem, mas não representa automaticamente circuitos de ordem superior.
+- O programa é um recurso didático, não um instrumento de ajuste metrológico.
 
 ---
 
@@ -824,19 +805,19 @@ a curva suave com $p=2$ deve coincidir com o módulo RC ideal, dentro do erro nu
 
 ## Próximos passos
 
-* [ ] importar pontos experimentais de ganho por CSV;
-* [ ] mostrar os pontos medidos sobre as curvas teórica e inferida;
-* [ ] permitir ajuste automático das duas retas;
-* [ ] permitir ajuste de $p$;
-* [ ] importar fase experimental;
-* [ ] separar o núcleo físico da camada de interface;
-* [ ] criar testes automatizados;
-* [ ] adicionar exportação de figuras e parâmetros;
-* [ ] adicionar arquivo `requirements.txt`;
-* [ ] adicionar `CITATION.cff`;
-* [ ] incluir capturas de tela no README;
-* [ ] documentar um roteiro completo para uso em aula;
-* [ ] avaliar modelos de ordem superior.
+- [ ] importar pontos experimentais de ganho por CSV;
+- [ ] mostrar os pontos medidos sobre as curvas teórica e inferida;
+- [ ] permitir ajuste automático das duas retas;
+- [ ] permitir ajuste de $p$;
+- [ ] importar fase experimental;
+- [ ] separar o núcleo físico da camada de interface;
+- [ ] criar testes automatizados;
+- [ ] adicionar exportação de figuras e parâmetros;
+- [ ] adicionar arquivo `requirements.txt`;
+- [ ] adicionar `CITATION.cff`;
+- [ ] incluir capturas de tela no README;
+- [ ] documentar um roteiro completo para uso em aula;
+- [ ] avaliar modelos de ordem superior.
 
 ---
 
@@ -854,11 +835,11 @@ https://github.com/gutermanjunior/Lab3-2026-Exp3Atv0-Fourier-Filtro_RC
 
 ## Créditos
 
-* **Desenvolvedor:** Guterman Rodrigues de Araujo Junior
-* **Instituição:** Instituto de Física da Universidade de São Paulo
-* **Disciplina:** 4302213 — Física Experimental III
-* **Atividade:** Experimento 3 — Atividade 0
-* **Finalidade:** apoio didático ao estudo de série de Fourier, resposta em frequência e circuito RC passa-baixa.
+- **Desenvolvedor:** Guterman Rodrigues de Araujo Junior
+- **Instituição:** Instituto de Física da Universidade de São Paulo
+- **Disciplina:** 4302213 — Física Experimental III
+- **Atividade:** Experimento 3 — Atividade 0
+- **Finalidade:** apoio didático ao estudo de série de Fourier, resposta em frequência e circuito RC passa-baixa.
 
 ---
 

@@ -164,10 +164,9 @@ O slider só confirma o valor ao soltar o mouse. Durante o arraste, apenas seu e
 
 A entrada é modelada por:
 
-$$
+```math
 v_e(t)=V_0\,\mathrm{sgn}\!\left[\sin(2\pi f_0t)\right].
-$$
-
+```
 Aqui:
 
 - $V_0$ é a amplitude de pico;
@@ -179,7 +178,7 @@ Aqui:
 
 A soma truncada com $M$ termos ímpares é:
 
-$$
+```math
 v_{e,M}(t)
 =
 \frac{4V_0}{\pi}
@@ -189,26 +188,22 @@ v_{e,M}(t)
 }{
 2k-1
 }.
-$$
-
+```
 Definindo:
 
-$$
+```math
 n_k=2k-1,
-$$
-
+```
 as frequências harmônicas são:
 
-$$
+```math
 f_k=n_kf_0=(2k-1)f_0.
-$$
-
+```
 A amplitude do $k$-ésimo termo da entrada é:
 
-$$
+```math
 A_k=\frac{4V_0}{\pi n_k}.
-$$
-
+```
 Como a soma é truncada, aparecem oscilações próximas às descontinuidades, associadas ao fenômeno de Gibbs.
 
 ---
@@ -217,15 +212,14 @@ Como a soma é truncada, aparecem oscilações próximas às descontinuidades, a
 
 Para um circuito RC série, medido sobre o capacitor:
 
-$$
+```math
 H_{RC}(f)
 =
 \frac{1}{1+j2\pi fRC}.
-$$
-
+```
 O módulo do ganho é:
 
-$$
+```math
 G_{RC}(f)
 =
 \left|H_{RC}(f)\right|
@@ -233,71 +227,61 @@ G_{RC}(f)
 \frac{1}{
 \sqrt{1+(2\pi fRC)^2}
 }.
-$$
-
+```
 A fase é:
 
-$$
+```math
 \phi_{RC}(f)
 =
 -\arctan(2\pi fRC).
-$$
-
+```
 A frequência de corte é:
 
-$$
+```math
 f_c=\frac{1}{2\pi RC}.
-$$
-
+```
 Na frequência de corte:
 
-$$
+```math
 G_{RC}(f_c)=\frac{1}{\sqrt{2}}\approx0{,}707.
-$$
-
+```
 ---
 
 ## Modelo de ganho obtido das retas do aluno
 
 A partir das medições de bancada, o aluno pode calcular:
 
-$$
+```math
 G(f)=\left|\frac{V_C(f)}{V_e(f)}\right|.
-$$
-
+```
 Em escala log-log:
 
-$$
+```math
 x=\log_{10}(f),
 \qquad
 y=\log_{10}(G).
-$$
-
+```
 Duas regiões podem ser ajustadas por retas:
 
-$$
+```math
 \log_{10}G_1(f)=a_1\log_{10}f+b_1,
-$$
-
-$$
+```
+```math
 \log_{10}G_2(f)=a_2\log_{10}f+b_2.
-$$
-
+```
 Em escala linear:
 
-$$
+```math
 G_1(f)=10^{a_1\log_{10}f+b_1},
-$$
-
-$$
+```
+```math
 G_2(f)=10^{a_2\log_{10}f+b_2}.
-$$
-
+```
 ### Curva suave inferida
 
 Em vez de usar o mínimo abrupto entre as retas, o programa constrói:
 
-$$
+```math
 G_{\mathrm{aluno}}(f)
 =
 \left[
@@ -305,34 +289,29 @@ G_1(f)^{-p}
 +
 G_2(f)^{-p}
 \right]^{-1/p}.
-$$
-
+```
 A versão atual utiliza:
 
-$$
+```math
 p=2.
-$$
-
+```
 Para as assíntotas ideais:
 
-$$
+```math
 G_1(f)=1,
-$$
-
-$$
+```
+```math
 G_2(f)=\frac{f_c}{f},
-$$
-
+```
 a expressão se reduz a:
 
-$$
+```math
 G_{\mathrm{aluno}}(f)
 =
 \frac{1}{
 \sqrt{1+(f/f_c)^2}
 },
-$$
-
+```
 que coincide com o módulo exato do RC de primeira ordem.
 
 Essa equivalência foi verificada numericamente no desenvolvimento, com diferença limitada ao erro de ponto flutuante.
@@ -341,32 +320,29 @@ Essa equivalência foi verificada numericamente no desenvolvimento, com diferen�
 
 A frequência de interseção é:
 
-$$
+```math
 f_\times
 =
 10^{
 \frac{b_2-b_1}{a_1-a_2}
 }.
-$$
-
+```
 Quando a fase estimada está ligada, o programa usa:
 
-$$
+```math
 \phi_{\mathrm{aluno}}(f)
 =
 -\arctan\!\left(\frac{f}{f_\times}\right).
-$$
-
+```
 Essa fase não foi medida diretamente. Ela é uma aproximação de primeira ordem inferida das próprias retas.
 
 ### Observação importante
 
 A combinação suave pressupõe duas assíntotas complementares. Se as duas retas forem idênticas, a expressão não é igual ao mínimo exato delas. Para $G_1=G_2=1$ e $p=2$:
 
-$$
+```math
 G_{\mathrm{aluno}}=\frac{1}{\sqrt{2}}.
-$$
-
+```
 Portanto, a condição $a_1=b_1=a_2=b_2=0$ não representa mais um teste de ganho unitário na versão atual. O modelo deve ser interpretado como uma interpolação suave entre uma região de platô e uma região de queda.
 
 ---
@@ -379,66 +355,59 @@ Este é o ponto central para interpretar corretamente o programa.
 
 ### Linha cinza
 
-$$
+```math
 G_{RC}(f)
-$$
-
+```
 É o ganho teórico do circuito RC calculado a partir dos valores nominais de $R$ e $C$.
 
 Ela serve como referência idealizada.
 
 ### Linhas vermelhas tracejadas
 
-$$
+```math
 G_1(f)
 \quad\text{e}\quad
 G_2(f)
-$$
-
+```
 São as duas retas inseridas pelo aluno.
 
 Elas representam as assíntotas ajustadas aos dados experimentais.
 
 ### Linha vermelha contínua
 
-$$
+```math
 G_{\mathrm{aluno}}(f)
-$$
-
+```
 É a curva suave construída a partir das duas retas.
 
 Essa é a curva usada na reconstrução temporal vermelha.
 
 ### Círculos vazados
 
-$$
+```math
 G_{RC}(f_k)
-$$
-
+```
 São os valores do ganho teórico avaliados apenas nas frequências harmônicas:
 
-$$
+```math
 f_k=(2k-1)f_0.
-$$
-
+```
 Eles não são novos dados experimentais e não formam um terceiro modelo.
 
 ### Quadrados vermelhos
 
-$$
+```math
 G_{\mathrm{aluno}}(f_k)
-$$
-
+```
 São os fatores que o programa realmente aplica às amplitudes dos termos da série de Fourier.
 
 Em outras palavras:
 
-$$
+```math
 A_{k,\mathrm{saída}}
 =
 A_kG_{\mathrm{aluno}}(f_k).
-$$
-
+```
 Alguns pontos são identificados como:
 
 ```text
@@ -455,24 +424,21 @@ O espectro foi colocado em um eixo próprio porque seus pontos representam **amp
 
 ### Entrada
 
-$$
+```math
 A_k
 =
 \frac{4V_0}{\pi(2k-1)}.
-$$
-
+```
 ### Saída teórica
 
-$$
+```math
 A_kG_{RC}(f_k).
-$$
-
+```
 ### Saída simulada a partir das retas
 
-$$
+```math
 A_kG_{\mathrm{aluno}}(f_k).
-$$
-
+```
 Portanto:
 
 ```text
@@ -509,7 +475,7 @@ Resposta por carga e descarga exponencial em regime periódico permanente.
 
 Reconstrução:
 
-$$
+```math
 v_{\mathrm{aluno},M}(t)
 =
 \sum_{k=1}^{M}
@@ -517,22 +483,19 @@ A_kG_{\mathrm{aluno}}(f_k)
 \sin\!\left(
 2\pi f_kt+\phi_{\mathrm{aluno}}(f_k)
 \right).
-$$
-
+```
 Com fase desligada:
 
-$$
+```math
 \phi_{\mathrm{aluno}}(f_k)=0.
-$$
-
+```
 Com fase estimada ligada:
 
-$$
+```math
 \phi_{\mathrm{aluno}}(f_k)
 =
 -\arctan\!\left(\frac{f_k}{f_\times}\right).
-$$
-
+```
 O objetivo é comparar qualitativamente essa curva com a forma de onda observada no osciloscópio.
 
 ---
@@ -541,33 +504,28 @@ O objetivo é comparar qualitativamente essa curva com a forma de onda observada
 
 O programa mostra explicitamente:
 
-$$
+```math
 v_k(t)
 =
 A_kG(f_k)
 \sin\!\left(
 \omega_kt+\phi_k
 \right).
-$$
-
+```
 Com:
 
-$$
+```math
 n_k=2k-1,
-$$
-
-$$
+```
+```math
 f_k=n_kf_0,
-$$
-
-$$
+```
+```math
 \omega_k=2\pi f_k,
-$$
-
-$$
+```
+```math
 A_k=\frac{4V_0}{\pi n_k}.
-$$
-
+```
 Também são exibidos os valores numéricos do último termo incluído:
 
 ```text
@@ -613,26 +571,23 @@ A distinção de notação é:
 
 Se o ajuste foi feito como:
 
-$$
+```math
 G_{\mathrm{dB}}
 =
 A\log_{10}(f)+B,
-$$
-
+```
 e:
 
-$$
+```math
 G_{\mathrm{dB}}=20\log_{10}(G),
-$$
-
+```
 então:
 
-$$
+```math
 a=\frac{A}{20},
 \qquad
 b=\frac{B}{20}.
-$$
-
+```
 ---
 
 ## Instalação
@@ -761,44 +716,39 @@ O custo restante depende do backend gráfico, da resolução da tela, da escala 
 
 Para:
 
-$$
+```math
 f_0\ll f_c,
-$$
-
+```
 os primeiros harmônicos devem sofrer pouca atenuação e a saída tende a preservar a forma quadrada.
 
 ### Próximo ao corte
 
 Para:
 
-$$
+```math
 f_0\approx f_c,
-$$
-
+```
 a fundamental já é atenuada e defasada, e os harmônicos superiores sofrem atenuação maior.
 
 ### Altas frequências
 
 Para:
 
-$$
+```math
 f_0\gg f_c,
-$$
-
+```
 a saída apresenta forte suavização e pode se aproximar do regime integrador.
 
 ### Assíntotas ideais
 
 Com:
 
-$$
+```math
 a_1=0,\quad b_1=0,
-$$
-
-$$
+```
+```math
 a_2=-1,\quad b_2=\log_{10}(f_c),
-$$
-
+```
 a curva suave com $p=2$ deve coincidir com o módulo RC ideal, dentro do erro numérico de ponto flutuante.
 
 ---

@@ -34,7 +34,7 @@
 #             -> reconstrução da tensão no capacitor
 #
 # Versão:
-#     1.3.0-alpha
+#     1.5.0-alpha
 #
 # Estado:
 #     Código em desenvolvimento.
@@ -168,6 +168,31 @@
 #     - Retorno do indicador "Processando..." para ações matemáticas e de
 #       interface. O aviso é desenhado por blitting quando possível antes da
 #       atualização e ocultado antes do redraw final.
+#     - Adicionados dois modelos explícitos para a curva vermelha:
+#         1. Retas do aluno: módulo vindo das retas log-log, com fase RC
+#            opcional;
+#         2. RC exato: módulo e fase obtidos de H_RC(f), permitindo que a
+#            reconstrução harmônica convirja para a curva ideal laranja.
+#     - O antigo botão de reset foi renomeado para "Retas assintóticas RC",
+#       deixando claro que ele carrega uma aproximação log-log, não o ganho
+#       RC exato.
+#     - Adicionado painel didático para o termo harmônico genérico:
+#         v_k(t)=A_k G(f_k) sen(ω_k t+φ_k),
+#       com atualização numérica do último termo incluído k=M.
+#     - O modelo do aluno passou a ser uma curva suave construída a partir
+#       das duas retas log-log. Para expoente p=2 e assíntotas ideais do RC,
+#       a expressão reproduz exatamente o módulo de um passa-baixa RC de
+#       primeira ordem.
+#     - O gráfico superior direito foi dividido em dois eixos empilhados:
+#         ganho em cima e espectro harmônico embaixo. Isso elimina a
+#         ambiguidade causada por dois eixos y sobrepostos.
+#     - Os marcadores no gráfico de ganho agora representam explicitamente
+#       os valores G(f_k) amostrados nas frequências harmônicas e usados para
+#       multiplicar as amplitudes da série de Fourier.
+#     - O espectro recebeu legendas físicas explícitas para A_k,
+#       A_k G_RC(f_k) e A_k G_aluno(f_k).
+#     - A fase opcional do modelo do aluno é estimada pela frequência de
+#       interseção das retas, em vez de usar diretamente o RC nominal.
 # =============================================================================
 
 
@@ -283,7 +308,17 @@ MOSTRAR_SAIDA_AJUSTADA_INICIAL = True
 MOSTRAR_HARMONICOS_INDIVIDUAIS_INICIAL = False
 MOSTRAR_RETAS_FIT_INICIAL = True
 MOSTRAR_ESPECTRO_FIT_INICIAL = True
-USAR_FASE_RC_AJUSTE_INICIAL = False
+USAR_FASE_RC_AJUSTE_INICIAL = True
+
+# Modelos possíveis para a curva temporal vermelha.
+MODO_GANHO_RETAS_ALUNO = "retas_aluno"
+MODO_GANHO_RC_EXATO = "rc_exato"
+MODO_GANHO_INICIAL = MODO_GANHO_RETAS_ALUNO
+
+# Expoente da combinação suave das duas retas.
+# p=2 reproduz exatamente o módulo RC de primeira ordem quando as retas são
+# G1=1 e G2=fc/f.
+EXPOENTE_SUAVIZACAO_RETAS = 2.0
 
 
 # -----------------------------------------------------------------------------
@@ -550,7 +585,7 @@ def criar_tema_visual(escala: float) -> dict[str, float | tuple[float, float]]:
     return {
         # Figura
         "fig_largura": 15.8 * escala_figura,
-        "fig_altura": 8.8 * escala_figura,
+        "fig_altura": 10.2 * escala_figura,
 
         # Fontes dos gráficos
         "fonte_titulo": 12.5 * escala,
@@ -958,7 +993,112 @@ def serie_fourier_saida_ganho_ajustado(
 # 6.5 Retas ajustadas em escala log-log
 # -----------------------------------------------------------------------------
 
+def ganhos_das_retas_individuais(
+    frequencias_hz: np.ndarray | float,
+    a1: float,
+    b1: float,
+    a2: float,
+    b2: float,
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Calcula separadamente os ganhos associados às duas retas log-log.
+
+    As retas são:
+
+        log10(G1) = a1 log10(f) + b1
+        log10(G2) = a2 log10(f) + b2
+    """
+    frequencias = np.maximum(
+        np.asarray(frequencias_hz, dtype=float),
+        1.0e-300,
+    )
+
+    logf = np.log10(frequencias)
+
+    g1 = 10.0 ** (a1 * logf + b1)
+    g2 = 10.0 ** (a2 * logf + b2)
+
+    return g1, g2
+
+
 def ganho_loglog_por_retas(
+    frequencias_hz: np.ndarray | float,
+    a1: float,
+    b1: float,
+    a2: float,
+    b2: float,
+    expoente_suavizacao: float = EXPOENTE_SUAVIZACAO_RETAS,
+) -> np.ndarray:
+    """
+    Gera uma curva suave a partir das duas retas ajustadas pelo aluno.
+
+    A combinação usada é:
+
+        G(f) = [G1(f)^(-p) + G2(f)^(-p)]^(-1/p)
+
+    Para p=2, G1=1 e G2=fc/f:
+
+        G(f) = 1 / sqrt[1 + (f/fc)^2],
+
+    que é exatamente o módulo do filtro RC passa-baixa de primeira ordem.
+
+    O cálculo é feito em logaritmo natural com np.logaddexp para reduzir risco
+    de overflow/underflow.
+    """
+    frequencias = np.maximum(
+        np.asarray(frequencias_hz, dtype=float),
+        1.0e-300,
+    )
+
+    p = float(expoente_suavizacao)
+
+    if p <= 0.0:
+        raise ValueError("O expoente de suavização deve ser positivo.")
+
+    logf = np.log10(frequencias)
+
+    log10_g1 = a1 * logf + b1
+    log10_g2 = a2 * logf + b2
+
+    ln10 = np.log(10.0)
+    ln_g1 = ln10 * log10_g1
+    ln_g2 = ln10 * log10_g2
+
+    ln_ganho = -np.logaddexp(-p * ln_g1, -p * ln_g2) / p
+    ganho = np.exp(ln_ganho)
+
+    # O circuito RC é passivo; limitamos o ganho a 1.
+    return np.clip(ganho, EPS_GANHO, 1.0)
+
+
+def ganho_do_modelo(
+    frequencias_hz: np.ndarray | float,
+    circuito: CircuitoRC,
+    modo_ganho: str,
+    a1: float,
+    b1: float,
+    a2: float,
+    b2: float,
+) -> np.ndarray:
+    """
+    Retorna o módulo do modelo usado na curva temporal vermelha.
+
+    A v25 usa sempre a curva suave inferida das duas retas do aluno. O argumento
+    modo_ganho foi mantido para compatibilidade interna com versões anteriores.
+    """
+    _ = circuito
+    _ = modo_ganho
+
+    return ganho_loglog_por_retas(
+        frequencias_hz,
+        a1,
+        b1,
+        a2,
+        b2,
+    )
+
+
+def fase_estimada_por_retas(
     frequencias_hz: np.ndarray | float,
     a1: float,
     b1: float,
@@ -966,16 +1106,117 @@ def ganho_loglog_por_retas(
     b2: float,
 ) -> np.ndarray:
     """
-    Calcula o ganho aproximado a partir de duas retas em escala log-log.
+    Estima a fase de um RC de primeira ordem pela interseção das retas.
+
+    A frequência de interseção é interpretada como frequência de corte
+    experimental aproximada:
+
+        phi(f) = -arctan(f/f_intersecao).
+
+    Se as retas forem paralelas ou a interseção não for válida, retorna fase
+    nula.
     """
-    frequencias = np.maximum(np.asarray(frequencias_hz, dtype=float), 1.0e-300)
+    frequencias = np.asarray(frequencias_hz, dtype=float)
+    f_intersecao = intersecao_retas_loglog(a1, b1, a2, b2)
 
-    logf = np.log10(frequencias)
-    logg1 = a1 * logf + b1
-    logg2 = a2 * logf + b2
-    logg = np.minimum(logg1, logg2)
+    if f_intersecao is None:
+        return np.zeros_like(frequencias, dtype=float)
 
-    return np.clip(10.0 ** logg, EPS_GANHO, 1.0)
+    return -np.arctan(frequencias / f_intersecao)
+
+
+def fase_do_modelo(
+    frequencias_hz: np.ndarray | float,
+    circuito: CircuitoRC,
+    modo_ganho: str,
+    usar_fase_rc_retas: bool,
+    a1: float,
+    b1: float,
+    a2: float,
+    b2: float,
+) -> np.ndarray:
+    """
+    Retorna a fase aplicada à curva vermelha.
+
+    Na v25, a fase opcional é estimada pelas próprias retas do aluno. O circuito
+    nominal permanece apenas como referência teórica independente.
+    """
+    _ = circuito
+    _ = modo_ganho
+
+    frequencias = np.asarray(frequencias_hz, dtype=float)
+
+    if usar_fase_rc_retas:
+        return fase_estimada_por_retas(
+            frequencias,
+            a1,
+            b1,
+            a2,
+            b2,
+        )
+
+    return np.zeros_like(frequencias, dtype=float)
+
+
+def serie_fourier_saida_modelo(
+    tempo_s: np.ndarray,
+    f0_hz: float,
+    m_harmonicos: int,
+    circuito: CircuitoRC,
+    modo_ganho: str,
+    a1: float,
+    b1: float,
+    a2: float,
+    b2: float,
+    usar_fase_rc_retas: bool,
+) -> np.ndarray:
+    """
+    Reconstrói a curva vermelha usando o modelo selecionado na interface.
+
+    Retas do aluno
+    ---------------
+    A amplitude de cada harmônico é multiplicada pelo ganho das retas. A fase
+    pode ser zero ou a fase ideal RC.
+
+    RC exato
+    --------
+    O módulo e a fase são obtidos de H_RC(f). Nesse modo, a soma de Fourier deve
+    convergir para a curva laranja de carga/descarga conforme M aumenta.
+    """
+    indices = indices_harmonicos_impares(m_harmonicos)
+
+    frequencias = indices * f0_hz
+    omega0 = 2.0 * np.pi * f0_hz
+    fases_temporais = np.outer(indices, omega0 * tempo_s)
+
+    coeficientes = (4.0 * AMPLITUDE_PICO_V / np.pi) / indices
+
+    ganhos = ganho_do_modelo(
+        frequencias,
+        circuito,
+        modo_ganho,
+        a1,
+        b1,
+        a2,
+        b2,
+    )
+
+    fases = fase_do_modelo(
+        frequencias,
+        circuito,
+        modo_ganho,
+        usar_fase_rc_retas,
+        a1,
+        b1,
+        a2,
+        b2,
+    )
+
+    return (coeficientes * ganhos) @ np.sin(
+        fases_temporais + fases[:, None]
+    )
+
+
 
 
 def intersecao_retas_loglog(
@@ -1052,6 +1293,7 @@ class AplicacaoOndaQuadradaRC:
         self.mostrar_retas_fit = MOSTRAR_RETAS_FIT_INICIAL
         self.mostrar_espectro_fit = MOSTRAR_ESPECTRO_FIT_INICIAL
         self.usar_fase_rc_ajuste = USAR_FASE_RC_AJUSTE_INICIAL
+        self.modo_ganho_temporal = MODO_GANHO_RETAS_ALUNO
 
         # ---------------------------------------------------------------------
         # Retas log-log iniciais
@@ -1110,24 +1352,36 @@ class AplicacaoOndaQuadradaRC:
         #
         # O espectro harmônico usa o eixo direito do gráfico de ganho.
         grade = self.fig.add_gridspec(
+            3,
             2,
-            2,
-            height_ratios=[1.00, 1.25],
+            height_ratios=[1.18, 0.22, 1.25],
             width_ratios=[1.05, 1.45],
             left=0.045,
             right=0.985,
-            top=0.895,
-            bottom=0.085,
+            top=0.905,
+            bottom=0.070,
             wspace=0.22,
-            hspace=0.34,
+            hspace=0.27,
+        )
+
+        subgrade_direita = grade[0, 1].subgridspec(
+            2,
+            1,
+            height_ratios=[0.70, 0.30],
+            hspace=0.08,
         )
 
         self.ax_painel = self.fig.add_subplot(grade[0, 0])
-        self.ax_ganho = self.fig.add_subplot(grade[0, 1])
-        self.ax_tempo = self.fig.add_subplot(grade[1, :])
-        self.ax_espectro = self.ax_ganho.twinx()
+        self.ax_ganho = self.fig.add_subplot(subgrade_direita[0, 0])
+        self.ax_espectro = self.fig.add_subplot(
+            subgrade_direita[1, 0],
+            sharex=self.ax_ganho,
+        )
+        self.ax_termo = self.fig.add_subplot(grade[1, :])
+        self.ax_tempo = self.fig.add_subplot(grade[2, :])
 
         self.ax_painel.axis("off")
+        self.ax_termo.axis("off")
 
         self.texto_processando = self.fig.text(
             0.985,
@@ -1151,6 +1405,7 @@ class AplicacaoOndaQuadradaRC:
         self._criar_grafico_temporal()
         self._criar_grafico_ganho()
         self._criar_grafico_espectro()
+        self._criar_painel_termo_harmonico()
         self._criar_painel_configuracao()
         self._conectar_widgets()
         self.fig.canvas.mpl_connect("draw_event", self._evento_draw)
@@ -1574,6 +1829,16 @@ class AplicacaoOndaQuadradaRC:
     def _criar_grafico_ganho(self) -> None:
         """
         Cria o gráfico de ganho em frequência.
+
+        Semântica visual
+        ----------------
+        Linhas contínuas:
+            modelos completos de ganho em função da frequência.
+
+        Marcadores:
+            valores das linhas avaliados apenas nas frequências harmônicas
+            f_k=(2k-1)f0. Esses são os fatores efetivamente aplicados aos termos
+            da série de Fourier.
         """
         t = self.tema
 
@@ -1581,40 +1846,63 @@ class AplicacaoOndaQuadradaRC:
             [],
             [],
             color="0.35",
-            alpha=0.38,
-            linewidth=1.15 * self.escala_interface,
+            alpha=0.40,
+            linewidth=1.25 * self.escala_interface,
             linestyle="-",
-            label="RC ideal: referência",
+            label=r"Referência teórica: $G_{RC}(f)$",
+        )
+
+        (self.linha_reta1,) = self.ax_ganho.loglog(
+            [],
+            [],
+            color="tab:red",
+            alpha=0.28,
+            linewidth=1.0 * self.escala_interface,
+            linestyle="--",
+            label="Retas ajustadas pelo aluno",
+        )
+
+        (self.linha_reta2,) = self.ax_ganho.loglog(
+            [],
+            [],
+            color="tab:red",
+            alpha=0.28,
+            linewidth=1.0 * self.escala_interface,
+            linestyle="--",
+            label="_nolegend_",
         )
 
         (self.linha_ganho_fit,) = self.ax_ganho.loglog(
             [],
             [],
             color="tab:red",
-            alpha=0.95,
-            linewidth=2.55 * self.escala_interface,
+            alpha=0.96,
+            linewidth=2.45 * self.escala_interface,
             linestyle="-",
-            label="Ganho do aluno: retas inseridas",
+            label="Curva suave inferida das retas",
         )
 
         (self.pontos_harmonicos_rc,) = self.ax_ganho.loglog(
             [],
             [],
-            "o",
-            color="0.35",
-            alpha=0.30,
-            markersize=0.75 * t["marcador"],
-            label=r"$G_{RC}(f_k)$ ref.",
+            linestyle="None",
+            marker="o",
+            markerfacecolor="none",
+            markeredgecolor="0.35",
+            alpha=0.55,
+            markersize=0.90 * t["marcador"],
+            label=r"$G_{RC}(f_k)$: referência nos harmônicos",
         )
 
         (self.pontos_harmonicos_fit,) = self.ax_ganho.loglog(
             [],
             [],
-            "s",
+            linestyle="None",
+            marker="s",
             color="tab:red",
             alpha=0.95,
             markersize=1.05 * t["marcador"],
-            label=r"$G_{aluno}(f_k)$ usado na curva vermelha",
+            label=r"$G_{\mathrm{aluno}}(f_k)$: fatores usados na Fourier",
         )
 
         self.linha_fc = self.ax_ganho.axvline(
@@ -1623,83 +1911,196 @@ class AplicacaoOndaQuadradaRC:
             alpha=0.45,
             linestyle=":",
             linewidth=t["linha_secundaria"],
-            label=r"$f_c$ ideal",
+            label=r"$f_c$ teórica",
         )
 
         self.linha_intersecao = self.ax_ganho.axvline(
             1.0,
             color="tab:red",
-            alpha=0.55,
+            alpha=0.60,
             linestyle="-.",
             linewidth=t["linha_secundaria"],
-            label="interseção das retas do aluno",
+            label=r"$f_\times$: interseção das retas",
         )
 
-        self.ax_ganho.set_xlabel("Frequência f (Hz)", fontsize=t["fonte_eixo"])
         self.ax_ganho.set_ylabel("Ganho linear G", fontsize=t["fonte_eixo"])
         self.ax_ganho.set_ylim(1.0e-3, 1.2)
-        self.ax_ganho.grid(True, which="both", linestyle="--", alpha=0.35)
-        self.ax_ganho.tick_params(labelsize=t["fonte_tick"])
+        self.ax_ganho.grid(True, which="both", linestyle="--", alpha=0.30)
+        self.ax_ganho.tick_params(
+            labelsize=t["fonte_tick"],
+            labelbottom=False,
+        )
 
         self.ax_ganho.set_title(
-            "Ganho definido pelo aluno e referência RC",
+            "Ganho: referência teórica e modelo inferido das medições",
             fontsize=t["fonte_titulo"],
+        )
+
+        self.texto_explicacao_pontos_ganho = self.ax_ganho.text(
+            0.985,
+            0.035,
+            (
+                r"Marcadores em $f_k=(2k-1)f_0$:" "\n"
+                r"$\circ$ referência teórica;  $\blacksquare$ fatores usados na soma."
+            ),
+            transform=self.ax_ganho.transAxes,
+            fontsize=0.78 * t["fonte_legenda"],
+            ha="right",
+            va="bottom",
+            bbox={
+                "boxstyle": "round,pad=0.25",
+                "facecolor": "white",
+                "edgecolor": "0.75",
+                "alpha": 0.82,
+            },
         )
 
         self.legenda_ganho = self.ax_ganho.legend(
             loc="lower left",
-            fontsize=t["fonte_legenda"],
+            fontsize=0.90 * t["fonte_legenda"],
         )
+
+        self.anotacoes_harmonicos_ganho = []
 
     # -------------------------------------------------------------------------
     def _criar_grafico_espectro(self) -> None:
         """
-        Cria o espectro harmônico no eixo direito do gráfico de ganho.
+        Cria o espectro harmônico em um eixo separado do gráfico de ganho.
+
+        Estes pontos não são ganhos. Eles representam amplitudes dos termos da
+        série de Fourier:
+
+            entrada:           A_k
+            saída teórica:     A_k G_RC(f_k)
+            saída simulada:    A_k G_aluno(f_k)
         """
         t = self.tema
 
+        self.ax_espectro.set_xscale("log")
         self.ax_espectro.set_yscale("log")
-        self.ax_espectro.set_ylabel("Amplitude harmônica", fontsize=t["fonte_eixo"])
-        self.ax_espectro.tick_params(labelsize=t["fonte_tick"])
+        self.ax_espectro.set_xlabel("Frequência f (Hz)", fontsize=t["fonte_eixo"])
+        self.ax_espectro.set_ylabel("Amplitude", fontsize=0.86 * t["fonte_eixo"])
+        self.ax_espectro.tick_params(labelsize=0.90 * t["fonte_tick"])
+        self.ax_espectro.grid(True, which="both", linestyle=":", alpha=0.24)
 
         (self.pontos_amp_entrada,) = self.ax_espectro.loglog(
             [],
             [],
-            "o",
+            marker="o",
+            linestyle=":",
             color="tab:green",
-            markersize=0.75 * t["marcador"],
-            alpha=0.35,
-            label="Amp. entrada",
+            linewidth=0.75 * self.escala_interface,
+            markersize=0.72 * t["marcador"],
+            alpha=0.62,
+            label=r"Entrada: $A_k$",
         )
 
         (self.pontos_amp_saida_rc,) = self.ax_espectro.loglog(
             [],
             [],
-            "o",
+            marker="o",
+            markerfacecolor="none",
+            linestyle=":",
             color="0.35",
-            markersize=0.75 * t["marcador"],
-            alpha=0.25,
-            label="Amp. ideal RC",
+            linewidth=0.75 * self.escala_interface,
+            markersize=0.72 * t["marcador"],
+            alpha=0.50,
+            label=r"Saída teórica: $A_kG_{RC}(f_k)$",
         )
 
         (self.pontos_amp_saida_fit,) = self.ax_espectro.loglog(
             [],
             [],
-            "s",
+            marker="s",
+            linestyle="-",
             color="tab:red",
-            markersize=0.95 * t["marcador"],
-            alpha=0.90,
-            label="Amp. aluno",
+            linewidth=1.05 * self.escala_interface,
+            markersize=0.82 * t["marcador"],
+            alpha=0.88,
+            label=r"Saída simulada: $A_kG_{\mathrm{aluno}}(f_k)$",
         )
 
         self.ax_espectro.set_ylim(ESPECTRO_Y_MIN, ESPECTRO_Y_MAX)
 
-        self.legenda_espectro = self.ax_espectro.legend(
-            loc="upper right",
-            fontsize=t["fonte_legenda"],
-            title="Espectro",
-            title_fontsize=t["fonte_legenda"],
+        self.texto_explicacao_espectro = self.ax_espectro.text(
+            0.985,
+            0.90,
+            "Espectro = amplitudes dos harmônicos; não é outro ganho.",
+            transform=self.ax_espectro.transAxes,
+            fontsize=0.72 * t["fonte_legenda"],
+            ha="right",
+            va="top",
         )
+
+        self.legenda_espectro = self.ax_espectro.legend(
+            loc="lower left",
+            fontsize=0.78 * t["fonte_legenda"],
+            ncol=3,
+        )
+
+    # -------------------------------------------------------------------------
+    def _criar_painel_termo_harmonico(self) -> None:
+        """
+        Cria uma faixa didática com a forma genérica do termo harmônico.
+
+        Notação usada
+        -------------
+        M
+            Número total de termos incluídos na soma.
+
+        k
+            Índice de um termo individual, com 1 <= k <= M.
+
+        n_k = 2k - 1
+            Ordem harmônica ímpar.
+
+        O painel também mostra os valores numéricos do último termo incluído,
+        isto é, k=M.
+        """
+        t = self.tema
+
+        self.ax_termo.set_xlim(0.0, 1.0)
+        self.ax_termo.set_ylim(0.0, 1.0)
+
+        self.ax_termo.text(
+            0.015,
+            0.82,
+            "Termo harmônico genérico",
+            fontsize=0.92 * t["fonte_painel_grupo"],
+            fontweight="bold",
+            ha="left",
+            va="center",
+        )
+
+        self.texto_termo_formula = self.ax_termo.text(
+            0.50,
+            0.67,
+            (
+                r"$v_k(t)=A_k\,G(f_k)\,"
+                r"\sin\!\left(\omega_k t+\phi_k\right)$"
+                r"$\quad$"
+                r"$n_k=2k-1,\;\;f_k=n_kf_0,\;\;"
+                r"\omega_k=2\pi f_k,\;\;"
+                r"A_k=\dfrac{4V_0}{\pi n_k}$"
+            ),
+            fontsize=0.92 * t["fonte_eixo"],
+            ha="center",
+            va="center",
+        )
+
+        self.texto_termo_valores = self.ax_termo.text(
+            0.50,
+            0.23,
+            "",
+            fontsize=0.86 * t["fonte_monospace"],
+            family="monospace",
+            ha="center",
+            va="center",
+        )
+
+        for spine in self.ax_termo.spines.values():
+            spine.set_visible(True)
+            spine.set_alpha(0.18)
 
     # -------------------------------------------------------------------------
     def _painel_axes(self, x: float, y: float, w: float, h: float):
@@ -1830,7 +2231,7 @@ class AplicacaoOndaQuadradaRC:
 
         self.botao_exibir_retas = Button(
             self._painel_axes(x_exibir, 0.654, w_exibir, 0.048),
-            "Retas",
+            "Assíntotas",
         )
 
         self.botao_exibir_espectro_fit = Button(
@@ -2000,14 +2401,40 @@ class AplicacaoOndaQuadradaRC:
             caixa.text_disp.set_ha("center")
             caixa.text_disp.set_position((0.5, 0.5))
 
+        self.ax_label_modelo_vermelho = self._painel_axes(
+            0.690,
+            0.250,
+            0.280,
+            0.048,
+        )
+        self.ax_label_modelo_vermelho.axis("off")
+        self.ax_label_modelo_vermelho.text(
+            0.5,
+            0.66,
+            "Curva simulada do aluno",
+            fontsize=0.84 * t["fonte_painel_pequena"],
+            fontweight="bold",
+            color="tab:red",
+            ha="center",
+            va="center",
+        )
+        self.ax_label_modelo_vermelho.text(
+            0.5,
+            0.18,
+            "suavização das duas retas (p=2)",
+            fontsize=0.72 * t["fonte_painel_pequena"],
+            ha="center",
+            va="center",
+        )
+
         self.botao_fase_rc = Button(
-            self._painel_axes(0.735, 0.214, 0.205, 0.052),
-            "Fase RC: OFF",
+            self._painel_axes(0.735, 0.177, 0.205, 0.050),
+            "Fase estimada: OFF",
         )
 
         self.botao_reset = Button(
-            self._painel_axes(0.735, 0.147, 0.205, 0.052),
-            "Retas do RC ideal",
+            self._painel_axes(0.735, 0.112, 0.205, 0.050),
+            "Carregar assíntotas RC",
         )
 
         # ------------------------------------------------------------------
@@ -2016,7 +2443,7 @@ class AplicacaoOndaQuadradaRC:
         self.texto_dica_db = self.ax_painel.text(
             0.060,
             0.064,
-            "dB: a=A/20, b=B/20    |    a=b=0 e fase OFF → vermelho = Fourier",
+            "dB: a=A/20, b=B/20  |  fase estimada usa f× da interseção das retas",
             transform=self.ax_painel.transAxes,
             fontsize=0.90 * t["fonte_painel_pequena"],
             ha="left",
@@ -2110,8 +2537,16 @@ class AplicacaoOndaQuadradaRC:
         self._estilizar_botao_estado(self.botao_exibir_harmonicos, self.mostrar_harmonicos_individuais)
         self._estilizar_botao_estado(self.botao_exibir_retas, self.mostrar_retas_fit)
         self._estilizar_botao_estado(self.botao_exibir_espectro_fit, self.mostrar_espectro_fit)
-        self._estilizar_botao_estado(self.botao_fase_rc, self.usar_fase_rc_ajuste)
-        self.botao_fase_rc.label.set_text("Fase RC: ON" if self.usar_fase_rc_ajuste else "Fase RC: OFF")
+
+        self._estilizar_botao_estado(
+            self.botao_fase_rc,
+            self.usar_fase_rc_ajuste,
+        )
+        self.botao_fase_rc.label.set_text(
+            "Fase estimada: ON"
+            if self.usar_fase_rc_ajuste
+            else "Fase estimada: OFF"
+        )
 
     # -------------------------------------------------------------------------
     def _atualizar_rotulos_frequencia(self) -> None:
@@ -2425,6 +2860,36 @@ class AplicacaoOndaQuadradaRC:
         self._perf_fim()
 
     # -------------------------------------------------------------------------
+    def _selecionar_modo_ganho(self, modo: str) -> None:
+        """
+        Seleciona o modelo usado na curva vermelha.
+
+        Retas do aluno
+            Usa o envelope das retas inseridas. A fase RC pode ser ligada ou
+            desligada.
+
+        RC exato
+            Usa módulo e fase da função de transferência completa H_RC(f).
+        """
+        if modo not in (MODO_GANHO_RETAS_ALUNO, MODO_GANHO_RC_EXATO):
+            return
+
+        if modo == self.modo_ganho_temporal:
+            return
+
+        self._mostrar_processando("Processando modelo...")
+
+        self.modo_ganho_temporal = modo
+
+        self._atualizar_fourier_temporal()
+        self._atualizar_retas_ganho()
+        self._atualizar_espectro_fit()
+        self._atualizar_texto_painel()
+        self._atualizar_estilos_controles()
+
+        self._solicitar_redesenho("modo_ganho")
+
+    # -------------------------------------------------------------------------
     def _alternar_visibilidade(self, nome: str) -> None:
         """
         Alterna um grupo de curvas visíveis.
@@ -2451,11 +2916,12 @@ class AplicacaoOndaQuadradaRC:
 
         elif nome == "espectro_fit":
             self.mostrar_espectro_fit = not self.mostrar_espectro_fit
-            self.pontos_amp_saida_fit.set_visible(self.mostrar_espectro_fit)
+            self._atualizar_visibilidade_espectro()
 
         elif nome == "fase_rc":
             self.usar_fase_rc_ajuste = not self.usar_fase_rc_ajuste
             self._atualizar_fourier_temporal()
+            self._atualizar_texto_painel()
 
         self._atualizar_estilos_controles()
         self._solicitar_redesenho("M")
@@ -2627,11 +3093,12 @@ class AplicacaoOndaQuadradaRC:
 
         t0 = time.perf_counter()
 
-        vc_fourier = serie_fourier_saida_ganho_ajustado(
+        vc_fourier = serie_fourier_saida_modelo(
             self.tempo_s,
             self.f0_hz,
             self.m_harmonicos,
             self.circuito,
+            self.modo_ganho_temporal,
             self.a1,
             self.b1,
             self.a2,
@@ -2717,9 +3184,10 @@ class AplicacaoOndaQuadradaRC:
         self.linha_ganho_rc.set_data(self.frequencias_plot_hz, ganhos_rc)
 
         self.linha_fc.set_xdata([self.circuito.fc_hz, self.circuito.fc_hz])
-        self.linha_fc.set_label(rf"$f_c$ ideal = {formatar_frequencia(self.circuito.fc_hz)}")
+        self.linha_fc.set_label(rf"$f_c$ teórica = {formatar_frequencia(self.circuito.fc_hz)}")
 
         self.ax_ganho.set_xlim(self.frequencias_plot_hz[0], self.frequencias_plot_hz[-1])
+        self.ax_espectro.set_xlim(self.frequencias_plot_hz[0], self.frequencias_plot_hz[-1])
 
         self._atualizar_retas_ganho()
         self._atualizar_pontos_harmonicos_ganho()
@@ -2727,9 +3195,9 @@ class AplicacaoOndaQuadradaRC:
     # -------------------------------------------------------------------------
     def _atualizar_retas_ganho(self) -> None:
         """
-        Atualiza o envelope das retas e a interseção.
+        Atualiza as duas assíntotas e a curva suave inferida delas.
         """
-        ganhos_fit = ganho_loglog_por_retas(
+        g1, g2 = ganhos_das_retas_individuais(
             self.frequencias_plot_hz,
             self.a1,
             self.b1,
@@ -2737,16 +3205,34 @@ class AplicacaoOndaQuadradaRC:
             self.b2,
         )
 
-        self.linha_ganho_fit.set_data(self.frequencias_plot_hz, ganhos_fit)
+        ganhos_suaves = ganho_loglog_por_retas(
+            self.frequencias_plot_hz,
+            self.a1,
+            self.b1,
+            self.a2,
+            self.b2,
+        )
 
-        f_intersecao = intersecao_retas_loglog(self.a1, self.b1, self.a2, self.b2)
+        self.linha_reta1.set_data(self.frequencias_plot_hz, g1)
+        self.linha_reta2.set_data(self.frequencias_plot_hz, g2)
+        self.linha_ganho_fit.set_data(
+            self.frequencias_plot_hz,
+            ganhos_suaves,
+        )
+
+        f_intersecao = intersecao_retas_loglog(
+            self.a1,
+            self.b1,
+            self.a2,
+            self.b2,
+        )
 
         if f_intersecao is None:
             self.linha_intersecao.set_visible(False)
         else:
             self.linha_intersecao.set_xdata([f_intersecao, f_intersecao])
             self.linha_intersecao.set_label(
-                f"interseção das retas ≈ {formatar_frequencia(f_intersecao)}"
+                rf"$f_  imes$ = {formatar_frequencia(f_intersecao)}"
             )
             self.linha_intersecao.set_visible(self.mostrar_retas_fit)
 
@@ -2780,12 +3266,12 @@ class AplicacaoOndaQuadradaRC:
     # -------------------------------------------------------------------------
     def _atualizar_pontos_harmonicos_fit(self) -> None:
         """
-        Atualiza os pontos G_fit(f_k) no gráfico de ganho.
+        Atualiza G_aluno(f_k) e rótulos de algumas frequências harmônicas.
         """
         indices = indices_harmonicos_impares(self.m_harmonicos)
         frequencias_harmonicos = indices * self.f0_hz
 
-        ganhos_harmonicos_fit = ganho_loglog_por_retas(
+        ganhos_harmonicos_modelo = ganho_loglog_por_retas(
             frequencias_harmonicos,
             self.a1,
             self.b1,
@@ -2795,8 +3281,40 @@ class AplicacaoOndaQuadradaRC:
 
         self.pontos_harmonicos_fit.set_data(
             frequencias_harmonicos,
-            ganhos_harmonicos_fit,
+            ganhos_harmonicos_modelo,
         )
+
+        for anotacao in self.anotacoes_harmonicos_ganho:
+            try:
+                anotacao.remove()
+            except Exception:
+                pass
+
+        self.anotacoes_harmonicos_ganho = []
+
+        if len(indices) <= 7:
+            posicoes = list(range(len(indices)))
+        else:
+            posicoes = [0, 1, 2, 3, len(indices) - 1]
+
+        for posicao in posicoes:
+            ordem = int(indices[posicao])
+            f_k = frequencias_harmonicos[posicao]
+            g_k = ganhos_harmonicos_modelo[posicao]
+
+            anotacao = self.ax_ganho.annotate(
+                rf"${ordem}f_0$",
+                xy=(f_k, g_k),
+                xytext=(0, 5),
+                textcoords="offset points",
+                ha="center",
+                va="bottom",
+                fontsize=0.68 * self.tema["fonte_tick"],
+                color="tab:red",
+                alpha=0.78,
+            )
+
+            self.anotacoes_harmonicos_ganho.append(anotacao)
 
     # -------------------------------------------------------------------------
     def _atualizar_espectro_completo(self) -> None:
@@ -2829,15 +3347,17 @@ class AplicacaoOndaQuadradaRC:
     # -------------------------------------------------------------------------
     def _atualizar_espectro_fit(self) -> None:
         """
-        Atualiza apenas a curva/pontos de espectro calculada pelas retas.
+        Atualiza o espectro associado ao modelo ativo da curva vermelha.
         """
         indices = indices_harmonicos_impares(self.m_harmonicos)
         frequencias = indices * self.f0_hz
 
         amplitudes_entrada = amplitudes_fourier_entrada(self.m_harmonicos)
 
-        ganhos_fit = ganho_loglog_por_retas(
+        ganhos_modelo = ganho_do_modelo(
             frequencias,
+            self.circuito,
+            self.modo_ganho_temporal,
             self.a1,
             self.b1,
             self.a2,
@@ -2846,10 +3366,69 @@ class AplicacaoOndaQuadradaRC:
 
         self.pontos_amp_saida_fit.set_data(
             frequencias,
-            amplitudes_entrada * ganhos_fit,
+            amplitudes_entrada * ganhos_modelo,
         )
 
-        self.pontos_amp_saida_fit.set_visible(self.mostrar_espectro_fit)
+
+    # -------------------------------------------------------------------------
+    def _atualizar_texto_termo_harmonico(self) -> None:
+        """
+        Atualiza os valores numéricos do último termo incluído, k=M.
+        """
+        k = int(self.m_harmonicos)
+        n_k = 2 * k - 1
+        f_k = n_k * self.f0_hz
+        omega_k = 2.0 * np.pi * f_k
+
+        amplitude_entrada = (
+            4.0 * AMPLITUDE_PICO_V / (np.pi * n_k)
+        )
+
+        ganho_k = float(
+            np.asarray(
+                ganho_do_modelo(
+                    f_k,
+                    self.circuito,
+                    self.modo_ganho_temporal,
+                    self.a1,
+                    self.b1,
+                    self.a2,
+                    self.b2,
+                )
+            )
+        )
+
+        fase_k = float(
+            np.asarray(
+                fase_do_modelo(
+                    f_k,
+                    self.circuito,
+                    self.modo_ganho_temporal,
+                    self.usar_fase_rc_ajuste,
+                    self.a1,
+                    self.b1,
+                    self.a2,
+                    self.b2,
+                )
+            )
+        )
+
+        amplitude_saida = amplitude_entrada * ganho_k
+
+        nome_modelo = "curva suave do aluno"
+
+        texto = (
+            f"k=M={k}   n_M=2M−1={n_k}   "
+            f"f_M={formatar_frequencia(f_k)}   "
+            f"ω_M={omega_k:.4g} rad/s   |   "
+            f"A_M={amplitude_entrada:.5g}   "
+            f"G(f_M)={ganho_k:.5g}   "
+            f"A_M·G={amplitude_saida:.5g}   "
+            f"φ_M={fase_k:.5g} rad   "
+            f"[{nome_modelo}]"
+        )
+
+        self.texto_termo_valores.set_text(texto)
 
     # -------------------------------------------------------------------------
     def _atualizar_texto_painel(self) -> None:
@@ -2879,13 +3458,15 @@ class AplicacaoOndaQuadradaRC:
             f"f0 atual = {formatar_frequencia(self.f0_hz)}    "
             f"f0/fc = {self.f0_hz / self.circuito.fc_hz:.3g}    "
             f"M = {self.m_harmonicos}    "
-            f"fase={'RC' if self.usar_fase_rc_ajuste else 'OFF'}\n"
+            f"modelo=curva suave    "
+            f"fase={'estimada' if self.usar_fase_rc_ajuste else 'OFF'}\n"
             f"Regimes: baixo {formatar_frequencia(freq_baixa)}, "
             f"corte {formatar_frequencia(freq_corte)}, "
             f"alto {formatar_frequencia(freq_alta)}"
         )
 
         self.texto_resumo_painel.set_text(texto_painel)
+        self._atualizar_texto_termo_harmonico()
 
     # -------------------------------------------------------------------------
     def _atualizar_visibilidade_fourier(self) -> None:
@@ -2900,11 +3481,31 @@ class AplicacaoOndaQuadradaRC:
         """
         Atualiza visibilidade dos elementos associados às retas ajustadas.
         """
-        self.linha_ganho_fit.set_visible(self.mostrar_retas_fit)
-        self.pontos_harmonicos_fit.set_visible(self.mostrar_retas_fit)
+        # A curva suave e seus pontos são o modelo principal e permanecem
+        # visíveis. O botão "Assíntotas" controla apenas as duas retas e sua
+        # interseção.
+        self.linha_ganho_fit.set_visible(True)
+        self.pontos_harmonicos_fit.set_visible(True)
+        self.linha_reta1.set_visible(self.mostrar_retas_fit)
+        self.linha_reta2.set_visible(self.mostrar_retas_fit)
 
-        f_intersecao = intersecao_retas_loglog(self.a1, self.b1, self.a2, self.b2)
-        self.linha_intersecao.set_visible(self.mostrar_retas_fit and f_intersecao is not None)
+        f_intersecao = intersecao_retas_loglog(
+            self.a1,
+            self.b1,
+            self.a2,
+            self.b2,
+        )
+
+        self.linha_intersecao.set_visible(
+            self.mostrar_retas_fit and f_intersecao is not None
+        )
+
+    # -------------------------------------------------------------------------
+    def _atualizar_visibilidade_espectro(self) -> None:
+        """
+        Mostra ou oculta todo o painel de espectro.
+        """
+        self.ax_espectro.set_visible(self.mostrar_espectro_fit)
 
     # -------------------------------------------------------------------------
     def _atualizar_visibilidades(self) -> None:

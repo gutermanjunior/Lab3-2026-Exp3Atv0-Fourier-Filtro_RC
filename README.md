@@ -753,7 +753,7 @@ a curva suave com $p=2$ deve coincidir com o módulo RC ideal, dentro do erro nu
 
 ---
 
-## Próximos passos
+## Próximos passos - Quer colaborar? Ajude a implementar algumas funções =D
 
 - [ ] importar pontos experimentais de ganho por CSV;
 - [ ] mostrar os pontos medidos sobre as curvas teórica e inferida;
@@ -764,7 +764,6 @@ a curva suave com $p=2$ deve coincidir com o módulo RC ideal, dentro do erro nu
 - [ ] criar testes automatizados;
 - [ ] adicionar exportação de figuras e parâmetros;
 - [ ] adicionar arquivo `requirements.txt`;
-- [ ] adicionar `CITATION.cff`;
 - [ ] incluir capturas de tela no README;
 - [ ] documentar um roteiro completo para uso em aula;
 - [ ] avaliar modelos de ordem superior.

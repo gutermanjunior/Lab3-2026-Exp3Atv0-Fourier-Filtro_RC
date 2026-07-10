@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "Se você utilizar este software, cite-o conforme indicado abaixo."
+title: "Onda Quadrada, Série de Fourier e Filtro RC Passa-Baixa: simulador didático para a Exp3Atv0"
+authors:
+  - family-names: "Araujo Junior"
+    given-names: "Guterman Rodrigues de"
+version: "1.5.0-alpha"
+url: "https://github.com/gutermanjunior/Lab3-2026-Exp3Atv0-Fourier-Filtro_RC"
